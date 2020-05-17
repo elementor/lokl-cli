@@ -6,4 +6,3 @@ workflows:
     jobs:
       - shellcheck/check:
           exclude: ./git/*
-          exclude: ./circleci/*
