@@ -1,0 +1,9 @@
+version: 2.1
+orbs:
+  shellcheck: circleci/shellcheck@1.3.16
+workflows:
+  shellcheck:
+    jobs:
+      - shellcheck/check:
+          exclude: ./git/*
+          exclude: ./circleci/*
