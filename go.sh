@@ -87,8 +87,8 @@ create_site_choose_name() {
     echo "Launching your new Lokl WordPress site!"
     echo "$LOKL_NAME"
 
-    LOKL_PORT=4996
-    LOKL_VERSION=0.0.2
+    LOKL_PORT="$(awk -v min=4000 -v max=5000 'BEGIN{srand(); print int(min+rand()*(max-min+1))}')"
+    LOKL_VERSION=0.0.3
     docker run -e N="$LOKL_NAME" -e P="$LOKL_PORT" \
       --name="$LOKL_NAME" -p "$LOKL_PORT":"$LOKL_PORT" \
       -d lokl/lokl:"$LOKL_VERSION"
@@ -144,6 +144,31 @@ manage_sites_menu() {
   echo "Type your site's number, then the Enter key: "
   echo ""
   # read -r site_to_manage_choice
+}
+
+# get all lokl container ports and find another within 4000-5000 range
+get_available_container_port() {
+  echo ""
+  # get all lokl container IDs
+  LOKL_CONTAINERS="$(docker ps -a | awk '{ print $1,$2 }' | grep lokl | awk '{print $1 }')"
+
+  # POSIX compliant way to iterate a list
+  OLDIFS="$IFS"
+  IFS='
+'
+  for CONTAINER_ID in $LOKL_CONTAINERS
+  do
+    # get container's exposed port
+    CONTAINTER_PORT="$(docker inspect --format='{{.NetworkSettings.Ports}}' "$CONTAINER_ID" | \
+      sed 's/^[^{]*{\([^{}]*\)}.*/\1/' | awk '{print $2}')"
+
+    echo "$SITE_COUNTER)  http://$CONTAINTER_NAME.localhost:$CONTAINTER_PORT"
+
+    SITE_COUNTER=$((SITE_COUNTER+1))
+  done
+  IFS="$OLDIFS"
+
+  echo "Available container port:"
 }
 
 main_menu
