@@ -88,7 +88,7 @@ create_site_choose_name() {
     echo "$LOKL_NAME"
 
     LOKL_PORT="$(awk -v min=4000 -v max=5000 'BEGIN{srand(); print int(min+rand()*(max-min+1))}')"
-    LOKL_VERSION=0.0.10
+    LOKL_VERSION=0.0.12
     docker run -e N="$LOKL_NAME" -e P="$LOKL_PORT" \
       --name="$LOKL_NAME" -p "$LOKL_PORT":"$LOKL_PORT" \
       -d lokl/lokl:"$LOKL_VERSION"
@@ -131,7 +131,7 @@ manage_sites_menu() {
     CONTAINTER_PORT="$(docker inspect --format='{{.NetworkSettings.Ports}}' "$CONTAINER_ID" | \
       sed 's/^[^{]*{\([^{}]*\)}.*/\1/' | awk '{print $2}')"
 
-    echo "$SITE_COUNTER)  http://localhost:$CONTAINTER_PORT"
+    echo "$SITE_COUNTER)  $CONTAINTER_NAME"
 
     SITE_COUNTER=$((SITE_COUNTER+1))
   done
@@ -143,18 +143,18 @@ manage_sites_menu() {
   echo "Type your site's number, then the Enter key: "
   echo ""
 
-  read -r site_to_manage_choice
-
-  # check int selected is in range of available sites
-  if [ "$site_to_manage_choice" != "${rangeofsiteints#[cmq]}" ] ;then
-    case $site_to_manage_choice in
-      c|C) create_site_choose_name ;;
-      m|M) manage_sites_menu ;;
-    esac
-
-  else
-    manage_sites_menu
-  fi
+#  read -r site_to_manage_choice
+#
+#  # check int selected is in range of available sites
+#  if [ "$site_to_manage_choice" != "${rangeofsiteints#[cmq]}" ] ;then
+#    case $site_to_manage_choice in
+#      c|C) create_site_choose_name ;;
+#      m|M) manage_sites_menu ;;
+#    esac
+#
+#  else
+#    manage_sites_menu
+#  fi
 }
 
 manage_single_site() {
