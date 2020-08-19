@@ -88,18 +88,17 @@ create_site_choose_name() {
     echo "$LOKL_NAME"
 
     LOKL_PORT="$(awk -v min=4000 -v max=5000 'BEGIN{srand(); print int(min+rand()*(max-min+1))}')"
-    LOKL_VERSION=0.0.8
+    LOKL_VERSION=0.0.10
     docker run -e N="$LOKL_NAME" -e P="$LOKL_PORT" \
       --name="$LOKL_NAME" -p "$LOKL_PORT":"$LOKL_PORT" \
       -d lokl/lokl:"$LOKL_VERSION"
 
    echo "Done! Access your Lokl WordPress site at:"
-   echo "http://$LOKL_NAME.localhost:$LOKL_PORT"
+   echo "http://localhost:$LOKL_PORT"
    echo ""
    echo "Press any key to manage sites:"
 
    read -r ""
-    #read -r create_site_name_choice
    manage_sites_menu
   fi
 
@@ -132,7 +131,7 @@ manage_sites_menu() {
     CONTAINTER_PORT="$(docker inspect --format='{{.NetworkSettings.Ports}}' "$CONTAINER_ID" | \
       sed 's/^[^{]*{\([^{}]*\)}.*/\1/' | awk '{print $2}')"
 
-    echo "$SITE_COUNTER)  http://$CONTAINTER_NAME.localhost:$CONTAINTER_PORT"
+    echo "$SITE_COUNTER)  http://localhost:$CONTAINTER_PORT"
 
     SITE_COUNTER=$((SITE_COUNTER+1))
   done
@@ -143,7 +142,34 @@ manage_sites_menu() {
   echo ""
   echo "Type your site's number, then the Enter key: "
   echo ""
-  # read -r site_to_manage_choice
+
+  read -r site_to_manage_choice
+
+  # check int selected is in range of available sites
+  if [ "$site_to_manage_choice" != "${rangeofsiteints#[cmq]}" ] ;then
+    case $site_to_manage_choice in
+      c|C) create_site_choose_name ;;
+      m|M) manage_sites_menu ;;
+    esac
+
+  else
+    manage_sites_menu
+  fi
+}
+
+manage_single_site() {
+  # get container id based on position in index
+
+  # print out details
+
+  echo "Site: $CONTAINTER_NAME"
+  echo ""
+  echo "Choose action to perform: "
+  echo ""
+  echo "o) open in browser  http://localhost:$CONTAINTER_PORT"
+  echo "s) SSH into container"
+  echo "t) take snapshot backup of container"
+  echo ""
 }
 
 # get all lokl container ports and find another within 4000-5000 range
@@ -162,7 +188,7 @@ get_available_container_port() {
     CONTAINTER_PORT="$(docker inspect --format='{{.NetworkSettings.Ports}}' "$CONTAINER_ID" | \
       sed 's/^[^{]*{\([^{}]*\)}.*/\1/' | awk '{print $2}')"
 
-    echo "$SITE_COUNTER)  http://$CONTAINTER_NAME.localhost:$CONTAINTER_PORT"
+    echo "$SITE_COUNTER)  http://localhost:$CONTAINTER_PORT"
 
     SITE_COUNTER=$((SITE_COUNTER+1))
   done
