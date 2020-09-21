@@ -94,7 +94,6 @@ create_site_choose_name() {
     attempt_counter=0
     max_attempts=12
 
-    # until $(curl --output /dev/null --silent --head --fail "http://localhost:$LOKL_PORT"); do
     until curl --output /dev/null --silent --head --fail "http://localhost:$LOKL_PORT"; do
         if [ ${attempt_counter} -eq ${max_attempts} ];then
           echo "Timed out waiting for site to come online..."
