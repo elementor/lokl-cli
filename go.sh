@@ -167,13 +167,11 @@ manage_sites_menu() {
 manage_single_site() {
   # load lokl container info from cache file
 
-  CONTAINER_INFO=`cat "/tmp/lokl_containers_cache/$site_to_manage_choice"` 
+  CONTAINER_INFO=$(cat "/tmp/lokl_containers_cache/$site_to_manage_choice") 
 
-  echo $CONTAINER_INFO
-
-  CONTAINER_ID=$(echo $CONTAINER_INFO | cut -f1 -d,)
-  CONTAINER_NAME=$(echo $CONTAINER_INFO | cut -f2 -d,)
-  CONTAINER_PORT=$(echo $CONTAINER_INFO | cut -f3 -d,)
+  CONTAINER_ID=$(echo "$CONTAINER_INFO" | cut -f1 -d,)
+  CONTAINER_NAME=$(echo "$CONTAINER_INFO" | cut -f2 -d,)
+  CONTAINER_PORT=$(echo "$CONTAINER_INFO" | cut -f3 -d,)
 
   # print out details
   echo "Site: $CONTAINER_NAME"
