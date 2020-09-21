@@ -93,6 +93,8 @@ create_site_choose_name() {
       --name="$LOKL_NAME" -p "$LOKL_PORT":"$LOKL_PORT" \
       -d lokl/lokl:"$LOKL_VERSION"
 
+   # TODO: poll until site accessible, print progresss
+
    echo "Done! Access your Lokl WordPress site at:"
    echo "http://localhost:$LOKL_PORT"
    echo ""
@@ -118,6 +120,10 @@ manage_sites_menu() {
   # get all lokl container IDs
   LOKL_CONTAINERS="$(docker ps -a | awk '{ print $1,$2 }' | grep lokl | awk '{print $1 }')"
 
+  # empty flatfile lokl containers cache
+  rm -Rf /tmp/lokl_containers_cache/*
+  mkdir -p /tmp/lokl_containers_cache/
+
   SITE_COUNTER=1
 
   # POSIX compliant way to iterate a list
@@ -126,12 +132,16 @@ manage_sites_menu() {
 '
   for CONTAINER_ID in $LOKL_CONTAINERS
   do
-    CONTAINTER_NAME="$(docker inspect --format='{{.Name}}' "$CONTAINER_ID" | sed 's|/||')"
+    CONTAINER_NAME="$(docker inspect --format='{{.Name}}' "$CONTAINER_ID" | sed 's|/||')"
     # get container's exposed port
-    CONTAINTER_PORT="$(docker inspect --format='{{.NetworkSettings.Ports}}' "$CONTAINER_ID" | \
+    CONTAINER_PORT="$(docker inspect --format='{{.NetworkSettings.Ports}}' "$CONTAINER_ID" | \
       sed 's/^[^{]*{\([^{}]*\)}.*/\1/' | awk '{print $2}')"
 
-    echo "$SITE_COUNTER)  $CONTAINTER_NAME"
+    # print choices for user
+    echo "$SITE_COUNTER)  $CONTAINER_NAME"
+
+    # append choices in cache file named for site counter (brittle internal ID) 
+    echo "$CONTAINER_ID,$CONTAINER_NAME,$CONTAINER_PORT" >> /tmp/lokl_containers_cache/$SITE_COUNTER
 
     SITE_COUNTER=$((SITE_COUNTER+1))
   done
@@ -143,30 +153,34 @@ manage_sites_menu() {
   echo "Type your site's number, then the Enter key: "
   echo ""
 
-#  read -r site_to_manage_choice
-#
-#  # check int selected is in range of available sites
-#  if [ "$site_to_manage_choice" != "${rangeofsiteints#[cmq]}" ] ;then
-#    case $site_to_manage_choice in
-#      c|C) create_site_choose_name ;;
-#      m|M) manage_sites_menu ;;
-#    esac
-#
-#  else
-#    manage_sites_menu
-#  fi
+  read -r site_to_manage_choice
+
+  # check int selected is in range of available sites
+  if [ ! -f "/tmp/lokl_containers_cache/$site_to_manage_choice" ]; then
+    echo "Requested site not found, try again"
+    manage_sites_menu
+  else 
+    manage_single_site
+  fi
 }
 
 manage_single_site() {
-  # get container id based on position in index
+  # load lokl container info from cache file
+
+  CONTAINER_INFO=`cat "/tmp/lokl_containers_cache/$site_to_manage_choice"` 
+
+  echo $CONTAINER_INFO
+
+  CONTAINER_ID=$(echo $CONTAINER_INFO | cut -f1 -d,)
+  CONTAINER_NAME=$(echo $CONTAINER_INFO | cut -f2 -d,)
+  CONTAINER_PORT=$(echo $CONTAINER_INFO | cut -f3 -d,)
 
   # print out details
-
-  echo "Site: $CONTAINTER_NAME"
+  echo "Site: $CONTAINER_NAME"
   echo ""
   echo "Choose action to perform: "
   echo ""
-  echo "o) open in browser  http://localhost:$CONTAINTER_PORT"
+  echo "o) open in browser  http://localhost:$CONTAINER_PORT"
   echo "s) SSH into container"
   echo "t) take snapshot backup of container"
   echo ""
@@ -185,10 +199,10 @@ get_available_container_port() {
   for CONTAINER_ID in $LOKL_CONTAINERS
   do
     # get container's exposed port
-    CONTAINTER_PORT="$(docker inspect --format='{{.NetworkSettings.Ports}}' "$CONTAINER_ID" | \
+    CONTAINER_PORT="$(docker inspect --format='{{.NetworkSettings.Ports}}' "$CONTAINER_ID" | \
       sed 's/^[^{]*{\([^{}]*\)}.*/\1/' | awk '{print $2}')"
 
-    echo "$SITE_COUNTER)  http://localhost:$CONTAINTER_PORT"
+    echo "$SITE_COUNTER)  http://localhost:$CONTAINER_PORT"
 
     SITE_COUNTER=$((SITE_COUNTER+1))
   done
