@@ -182,6 +182,23 @@ manage_single_site() {
   echo "s) SSH into container"
   echo "t) take snapshot backup of container"
   echo ""
+  echo "m) Back to manage sites menu"
+  echo "q) Quit this menu"
+  echo ""
+  read -r site_action_choice
+
+  if [ "$site_action_choice" != "${site_action_choice#[ostmq]}" ] ;then
+    case $site_action_choice in
+      o|O) open_site_in_browser ;;
+      s|S) ssh_into_container ;;
+      t|T) take_site_snapshot ;;
+      m|M) manage_sites_menu ;;
+      q|Q) exit 0 ;;
+    esac
+
+  else
+    manage_single_site
+  fi
 }
 
 # get all lokl container ports and find another within 4000-5000 range
