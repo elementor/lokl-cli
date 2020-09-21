@@ -24,9 +24,11 @@
 main_menu() {
   clear
   echo ""
-  echo "====================================="
-  echo "  Lokl launcher & management script  "
-  echo "====================================="
+  echo "================================================"
+  echo "      Lokl launcher & management script         "
+  echo "================================================"
+  echo "   Press (Ctrl) and (c) keys to exit anytime    "
+  echo "------------------------------------------------"
   echo ""
   echo "c) Create new Lokl WordPress site"
   echo "m) Manage my existing Lokl sites"
@@ -52,12 +54,6 @@ main_menu() {
 
 create_site_choose_name() {
   clear
-  echo ""
-  echo "================================================"
-  echo "      Lokl launcher & management script         "
-  echo "================================================"
-  echo "   Press (Ctrl) and (c) keys to exit anytime    "
-  echo "------------------------------------------------"
   echo ""
   echo "Choose a name for your new Lokl WordPress site. "
   echo ""
@@ -109,12 +105,6 @@ create_site_choose_name() {
 manage_sites_menu() {
   clear
   echo ""
-  echo "================================================"
-  echo "      Lokl launcher & management script         "
-  echo "================================================"
-  echo "   Press (Ctrl) and (c) keys to exit anytime    "
-  echo "------------------------------------------------"
-  echo ""
   echo "Your Lokl WordPress sites"
   echo ""
   # get all lokl container IDs
@@ -165,10 +155,10 @@ manage_sites_menu() {
 }
 
 manage_single_site() {
+  clear
+
   # load lokl container info from cache file
-
   CONTAINER_INFO=$(cat "/tmp/lokl_containers_cache/$site_to_manage_choice") 
-
   CONTAINER_ID=$(echo "$CONTAINER_INFO" | cut -f1 -d,)
   CONTAINER_NAME=$(echo "$CONTAINER_INFO" | cut -f2 -d,)
   CONTAINER_PORT=$(echo "$CONTAINER_INFO" | cut -f3 -d,)
@@ -198,6 +188,31 @@ manage_single_site() {
 
   else
     manage_single_site
+  fi
+}
+
+# open site in default browser
+open_site_in_browser() {
+  SITE_URL="http://localhost:$CONTAINER_PORT"
+
+  if command -v xdg-open > /dev/null; then
+    clear
+    echo "Opening $SITE_URL in your browser."
+    xdg-open "$SITE_URL"
+  elif command -v gnome-open > /dev/null; then
+    clear
+    echo "Opening $SITE_URL in your browser."
+    gnome-open "$SITE_URL"
+  elif open -Ra "safari" ; then
+    clear
+    echo "Opening $SITE_URL in Safari."
+    open -a safari "$SITE_URL"
+  else
+    echo "Couldn't detect the web browser to use."
+    echo ""
+    echo "Please manually open this URL in your browser:"
+    echo ""
+    echo "$SITE_URL"
   fi
 }
 
