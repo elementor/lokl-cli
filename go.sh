@@ -81,7 +81,7 @@ create_site_choose_name() {
     LOKL_NAME="$(echo "$LOKL_NAME" | cut -c1-100)"
 
     LOKL_PORT="$(awk -v min=4000 -v max=5000 'BEGIN{srand(); print int(min+rand()*(max-min+1))}')"
-    LOKL_VERSION=0.0.18
+    LOKL_VERSION=0.0.10
     docker run -e N="$LOKL_NAME" -e P="$LOKL_PORT" \
       --name="$LOKL_NAME" -p "$LOKL_PORT":"$LOKL_PORT" \
       -d lokl/lokl:"$LOKL_VERSION"
@@ -185,7 +185,7 @@ manage_single_site() {
   echo ""
   echo "o) open in browser  http://localhost:$CONTAINER_PORT"
   echo "s) SSH into container"
-  echo "t) take snapshot backup of container"
+  echo "t) take backup of site files and database"
   echo ""
   echo "m) Back to manage sites menu"
   echo "q) Quit this menu"
@@ -196,7 +196,7 @@ manage_single_site() {
     case $site_action_choice in
       o|O) open_site_in_browser ;;
       s|S) ssh_into_container ;;
-      t|T) take_site_snapshot ;;
+      t|T) take_site_backup ;;
       m|M) manage_sites_menu ;;
       q|Q) exit 0 ;;
     esac
@@ -204,6 +204,37 @@ manage_single_site() {
   else
     manage_single_site
   fi
+}
+
+# take DB and files backup of site
+take_site_backup() {
+  clear
+  echo "Generating backup file in container..."
+  echo ""
+  docker exec -it "$CONTAINER_ID" /backup_site.sh
+  echo "Saving backup to host computer in path:"
+  echo ""
+  echo "/tmp/$CONTAINER_NAME_SITE_BACKUP.tar.gz"
+  echo ""
+  docker cp "$CONTAINER_ID:/tmp/$CONTAINER_NAME_SITE_BACKUP.tar.gz" \
+    "/tmp/$CONTAINER_NAME_SITE_BACKUP.tar.gz"
+
+  # ensure file was generated
+  if [ ! -f "/tmp/$CONTAINER_NAME_SITE_BACKUP.tar.gz" ]; then
+    echo "Failed to save backup, try again"
+    exit 1
+  else 
+    echo "Backup complete"
+    exit 0
+  fi
+}
+
+# shell connect to container using Docker
+ssh_into_container() {
+  clear
+  echo "Connecting to $CONTAINER_NAME via SSH"
+  echo ""
+  docker exec -it "$CONTAINER_ID" /bin/sh
 }
 
 # open site in default browser
