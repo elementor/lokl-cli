@@ -80,26 +80,42 @@ create_site_choose_name() {
     # trim to 100 chars if over
     LOKL_NAME="$(echo "$LOKL_NAME" | cut -c1-100)"
 
-    echo "Launching your new Lokl WordPress site!"
-    echo "$LOKL_NAME"
-
     LOKL_PORT="$(awk -v min=4000 -v max=5000 'BEGIN{srand(); print int(min+rand()*(max-min+1))}')"
     LOKL_VERSION=0.0.18
     docker run -e N="$LOKL_NAME" -e P="$LOKL_PORT" \
       --name="$LOKL_NAME" -p "$LOKL_PORT":"$LOKL_PORT" \
       -d lokl/lokl:"$LOKL_VERSION"
 
-   # TODO: poll until site accessible, print progresss
+    clear
+    echo "Launching your new Lokl WordPress site!"
+    echo "Waiting for $LOKL_NAME to be ready"
 
-   echo "Done! Access your Lokl WordPress site at:"
-   echo "http://localhost:$LOKL_PORT"
-   echo ""
-   echo "Press any key to manage sites:"
+    # poll until site accessible, print progresss
+    attempt_counter=0
+    max_attempts=12
 
-   read -r ""
-   manage_sites_menu
+    # until $(curl --output /dev/null --silent --head --fail "http://localhost:$LOKL_PORT"); do
+    until curl --output /dev/null --silent --head --fail "http://localhost:$LOKL_PORT"; do
+        if [ ${attempt_counter} -eq ${max_attempts} ];then
+          echo "Timed out waiting for site to come online..."
+          exit 1
+        fi
+
+        printf '.'
+        attempt_counter=$((attempt_counter+1))
+        sleep 5
+    done
+
+    clear
+    echo "Your new Lokl WordPress site, $LOKL_NAME, is ready at:"
+    echo ""
+    echo "http://localhost:$LOKL_PORT"
+    echo ""
+    echo "Press any key to manage sites:"
+
+    read -r ""
+    manage_sites_menu
   fi
-
 }
 
 manage_sites_menu() {
