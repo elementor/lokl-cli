@@ -168,12 +168,14 @@ manage_sites_menu() {
     # get container's exposed port
     CONTAINER_PORT="$(docker inspect --format='{{.NetworkSettings.Ports}}' "$CONTAINER_ID" | \
       sed 's/^[^{]*{\([^{}]*\)}.*/\1/' | awk '{print $2}')"
+    # get state
+    CONTAINER_STATE="$(docker inspect --format='{{.State.Status}}' "$CONTAINER_ID")"
 
     # print choices for user
     echo "$SITE_COUNTER)  $CONTAINER_NAME"
 
     # append choices in cache file named for site counter (brittle internal ID) 
-    echo "$CONTAINER_ID,$CONTAINER_NAME,$CONTAINER_PORT" >> /tmp/lokl_containers_cache/$SITE_COUNTER
+    echo "$CONTAINER_ID,$CONTAINER_NAME,$CONTAINER_PORT,$CONTAINER_STATE" >> /tmp/lokl_containers_cache/$SITE_COUNTER
 
     SITE_COUNTER=$((SITE_COUNTER+1))
   done
@@ -196,6 +198,59 @@ manage_sites_menu() {
   fi
 }
 
+start_if_stopped() {
+  if [ "$CONTAINER_STATE" != "running" ] ;then
+    clear
+    echo "$CONTAINER_NAME was stopped, so we're re-launching it"
+    echo "before performing your desired action..."
+    echo ""
+
+    docker start "$CONTAINER_ID" > /dev/null
+
+    # need to get container port again here
+    # get container's exposed port
+    CONTAINER_PORT="$(docker inspect --format='{{.NetworkSettings.Ports}}' "$CONTAINER_ID" | \
+      sed 's/^[^{]*{\([^{}]*\)}.*/\1/' | awk '{print $2}')"
+
+    echo "Waiting for site to become accessible at http://localhost:$CONTAINER_PORT"
+
+    # poll until site accessible, print progresss
+    attempt_counter=0
+    max_attempts=12
+
+    # await ready state of webserver after launching
+    until curl --output /dev/null --silent --head --fail "http://localhost:$CONTAINER_PORT"; do
+        if [ ${attempt_counter} -eq ${max_attempts} ];then
+          echo "Timed out waiting for site to come online..."
+          exit 1
+        fi
+
+        printf '.'
+        attempt_counter=$((attempt_counter+1))
+        sleep 5
+    done
+  fi
+}
+
+kill_container() {
+  clear
+  echo "Are you sure you want to force quit $CONTAINER_NAME?"
+  echo ""
+  echo "Type 'y' for yes:"
+
+  read -r confirm_kill_container
+
+  if [ "$confirm_kill_container" != "y" ] ;then
+    manage_single_site
+  else
+    echo "Stopping $CONTAINER_NAME's server."
+    echo ""
+    echo "Lokl will attempt to launch it again as you need it"
+    echo ""
+    docker kill "$CONTAINER_ID" > /dev/null
+  fi
+}
+
 manage_single_site() {
   clear
 
@@ -204,27 +259,35 @@ manage_single_site() {
   CONTAINER_ID=$(echo "$CONTAINER_INFO" | cut -f1 -d,)
   CONTAINER_NAME=$(echo "$CONTAINER_INFO" | cut -f2 -d,)
   CONTAINER_PORT=$(echo "$CONTAINER_INFO" | cut -f3 -d,)
+  CONTAINER_STATE=$(echo "$CONTAINER_INFO" | cut -f4 -d,)
 
   # print out details
   echo "Site: $CONTAINER_NAME"
+  echo "Status: $CONTAINER_STATE"
   echo ""
   echo "Choose action to perform: "
   echo ""
   echo "o) open in browser  http://localhost:$CONTAINER_PORT"
   echo "s) SSH into container"
   echo "t) take backup of site files and database"
+
+  if [ "$CONTAINER_STATE" = "running" ] ;then
+    echo "k) kill (force quit) site's server"
+  fi
+
   echo ""
   echo "m) Back to manage sites menu"
   echo "q) Quit this menu"
   echo ""
   read -r site_action_choice
 
-  if [ "$site_action_choice" != "${site_action_choice#[ostmq]}" ] ;then
+  if [ "$site_action_choice" != "${site_action_choice#[ostkmq]}" ] ;then
     case $site_action_choice in
       o|O) open_site_in_browser ;;
       s|S) ssh_into_container ;;
       t|T) take_site_backup ;;
       m|M) manage_sites_menu ;;
+      k|K) kill_container ;;
       q|Q) exit 0 ;;
     esac
 
@@ -235,6 +298,7 @@ manage_single_site() {
 
 # take DB and files backup of site
 take_site_backup() {
+  start_if_stopped
   clear
   echo "Generating backup file in container..."
   echo ""
@@ -259,6 +323,7 @@ take_site_backup() {
 
 # shell connect to container using Docker
 ssh_into_container() {
+  start_if_stopped
   clear
   echo "Connecting to $CONTAINER_NAME via SSH"
   echo ""
@@ -267,6 +332,8 @@ ssh_into_container() {
 
 # open site in default browser
 open_site_in_browser() {
+  start_if_stopped
+
   SITE_URL="http://localhost:$CONTAINER_PORT"
 
   if command -v xdg-open > /dev/null; then
