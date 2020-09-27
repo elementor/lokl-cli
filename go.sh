@@ -114,6 +114,7 @@ create_site_choose_name() {
 
     clear
     echo "Launching your new Lokl WordPress site!"
+    echo ""
     echo "Waiting for $LOKL_NAME to be ready"
 
     # poll until site accessible, print progresss
@@ -251,6 +252,23 @@ kill_container() {
   fi
 }
 
+delete_container() {
+  clear
+  echo "Are you sure you want to delete $CONTAINER_NAME completely?"
+  echo ""
+  echo "Type 'y' for yes:"
+
+  read -r confirm_delete_container
+
+  if [ "$confirm_delete_container" != "y" ] ;then
+    manage_single_site
+  else
+    echo "Deleting $CONTAINER_NAME completely."
+    echo ""
+    docker rm "$CONTAINER_ID" > /dev/null
+  fi
+}
+
 manage_single_site() {
   clear
 
@@ -275,19 +293,24 @@ manage_single_site() {
     echo "k) kill (force quit) site's server"
   fi
 
+  if [ "$CONTAINER_STATE" != "running" ] ;then
+    echo "d) delete server and site completely"
+  fi
+
   echo ""
   echo "m) Back to manage sites menu"
   echo "q) Quit this menu"
   echo ""
   read -r site_action_choice
 
-  if [ "$site_action_choice" != "${site_action_choice#[ostkmq]}" ] ;then
+  if [ "$site_action_choice" != "${site_action_choice#[ostkdmq]}" ] ;then
     case $site_action_choice in
       o|O) open_site_in_browser ;;
       s|S) ssh_into_container ;;
       t|T) take_site_backup ;;
       m|M) manage_sites_menu ;;
       k|K) kill_container ;;
+      d|D) delete_container ;;
       q|Q) exit 0 ;;
     esac
 
