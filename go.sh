@@ -4,10 +4,6 @@
 #
 # Allows users to easily spin-up and manage new Lokl WordPress instances
 #
-# Feature to-do list:
-#   - [ ] spin-up new Lokl WordPress site
-#   - [ ] manage existing Lokl WordPress sites
-#
 # License: The Unlicense, https://unlicense.org
 #
 # Usage: execute this script from the project root
@@ -26,8 +22,11 @@ main_menu() {
   echo ""
   echo "================================================"
   echo "      Lokl launcher & management script         "
+  echo ""
+  echo "                https://lokl.dev"
+  echo ""
   echo "================================================"
-  echo "   Press (Ctrl) and (c) keys to exit anytime    "
+  echo "   Press (Ctrl) and (c) keys to exit anytime"
   echo "------------------------------------------------"
   echo ""
   echo "c) Create new Lokl WordPress site"
@@ -52,7 +51,34 @@ main_menu() {
   fi
 }
 
+test_core_capabilities() {
+  clear
+  echo ""
+  echo "Checking system requirements... "
+  echo ""
+  test_docker_available
+  test_curl_available
+}
+
+
+test_curl_available() {
+  if ! command -v curl > /dev/null
+  then
+      echo "cURL doesn't seem to be installed."
+      exit 1
+  fi
+}
+
+test_docker_available() {
+  if ! docker run hello-world > /dev/null 2>&1
+  then
+     echo "Docker doesn't seem to be suitably configured for Lokl"
+     exit 1
+  fi
+}
+
 create_site_choose_name() {
+  test_core_capabilities
   clear
   echo ""
   echo "Choose a name for your new Lokl WordPress site. "
@@ -118,6 +144,7 @@ create_site_choose_name() {
 }
 
 manage_sites_menu() {
+  test_core_capabilities
   clear
   echo ""
   echo "Your Lokl WordPress sites"
