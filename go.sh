@@ -10,7 +10,7 @@
 #
 #     run from internet:
 #
-#     $   \curl -sSL https://lokl.dev/go | bash
+#     $   \sh -c "$(curl -sSl 'https://lokl.dev/go?v=2')"
 #
 #     run locally:
 #

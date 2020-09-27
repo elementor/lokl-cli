@@ -8,7 +8,7 @@ Usage
 
 ### macOS, Linux
 
-`\curl -sSL https://lokl.dev/go?v=2 | sh`
+`\sh -c "$(curl -sSl 'https://lokl.dev/go?v=2')"`
 
 
 Build status
