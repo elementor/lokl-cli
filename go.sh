@@ -107,7 +107,7 @@ create_site_choose_name() {
     LOKL_NAME="$(echo "$LOKL_NAME" | cut -c1-100)"
 
     LOKL_PORT="$(awk -v min=4000 -v max=5000 'BEGIN{srand(); print int(min+rand()*(max-min+1))}')"
-    LOKL_VERSION=0.0.15
+    LOKL_VERSION=0.0.19
     docker run -e N="$LOKL_NAME" -e P="$LOKL_PORT" \
       --name="$LOKL_NAME" -p "$LOKL_PORT":"$LOKL_PORT" \
       -d lokl/lokl:"$LOKL_VERSION"
@@ -285,7 +285,9 @@ manage_single_site() {
   echo ""
   echo "Choose action to perform: "
   echo ""
-  echo "o) open in browser  http://localhost:$CONTAINER_PORT"
+  echo "o) open site  http://localhost:$CONTAINER_PORT"
+  echo "a) open WordPress admin  /wp-admin"
+  echo "p) open phpMyAdmin  /phpmyadmin"
   echo "s) SSH into container"
   echo "t) take backup of site files and database"
 
@@ -303,9 +305,11 @@ manage_single_site() {
   echo ""
   read -r site_action_choice
 
-  if [ "$site_action_choice" != "${site_action_choice#[ostkdmq]}" ] ;then
+  if [ "$site_action_choice" != "${site_action_choice#[oapstkdmq]}" ] ;then
     case $site_action_choice in
       o|O) open_site_in_browser ;;
+      a|A) open_wordpress_admin ;;
+      p|P) open_phpmyadmin ;;
       s|S) ssh_into_container ;;
       t|T) take_site_backup ;;
       m|M) manage_sites_menu ;;
@@ -358,6 +362,58 @@ open_site_in_browser() {
   start_if_stopped
 
   SITE_URL="http://localhost:$CONTAINER_PORT"
+
+  if command -v xdg-open > /dev/null; then
+    clear
+    echo "Opening $SITE_URL in your browser."
+    xdg-open "$SITE_URL"
+  elif command -v gnome-open > /dev/null; then
+    clear
+    echo "Opening $SITE_URL in your browser."
+    gnome-open "$SITE_URL"
+  elif open -Ra "safari" ; then
+    clear
+    echo "Opening $SITE_URL in Safari."
+    open -a safari "$SITE_URL"
+  else
+    echo "Couldn't detect the web browser to use."
+    echo ""
+    echo "Please manually open this URL in your browser:"
+    echo ""
+    echo "$SITE_URL"
+  fi
+}
+
+open_wordpress_admin() {
+  start_if_stopped
+
+  SITE_URL="http://localhost:$CONTAINER_PORT/wp-admin/"
+
+  if command -v xdg-open > /dev/null; then
+    clear
+    echo "Opening $SITE_URL in your browser."
+    xdg-open "$SITE_URL"
+  elif command -v gnome-open > /dev/null; then
+    clear
+    echo "Opening $SITE_URL in your browser."
+    gnome-open "$SITE_URL"
+  elif open -Ra "safari" ; then
+    clear
+    echo "Opening $SITE_URL in Safari."
+    open -a safari "$SITE_URL"
+  else
+    echo "Couldn't detect the web browser to use."
+    echo ""
+    echo "Please manually open this URL in your browser:"
+    echo ""
+    echo "$SITE_URL"
+  fi
+}
+
+open_phpmyadmin() {
+  start_if_stopped
+
+  SITE_URL="http://localhost:$CONTAINER_PORT/phpmyadmin/"
 
   if command -v xdg-open > /dev/null; then
     clear

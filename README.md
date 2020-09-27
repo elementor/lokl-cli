@@ -6,9 +6,9 @@ Interactive script for launching and managing your [lokl](https://lokl.dev) webs
 Usage
 =====
 
-### macOS, Linux
+### macOS, Linux, Windows
 
-`\sh -c "$(curl -sSl 'https://lokl.dev/go?v=2')"`
+`\sh -c "$(curl -sSl 'https://lokl.dev/go?v=3')"`
 
 
 Build status
