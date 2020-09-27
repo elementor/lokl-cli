@@ -290,6 +290,7 @@ manage_single_site() {
   echo "p) open phpMyAdmin  /phpmyadmin"
   echo "s) SSH into container"
   echo "t) take backup of site files and database"
+  echo "l) follow server error logs"
 
   if [ "$CONTAINER_STATE" = "running" ] ;then
     echo "k) kill (force quit) site's server"
@@ -305,13 +306,14 @@ manage_single_site() {
   echo ""
   read -r site_action_choice
 
-  if [ "$site_action_choice" != "${site_action_choice#[oapstkdmq]}" ] ;then
+  if [ "$site_action_choice" != "${site_action_choice#[oapstlkdmq]}" ] ;then
     case $site_action_choice in
       o|O) open_site_in_browser ;;
       a|A) open_wordpress_admin ;;
       p|P) open_phpmyadmin ;;
       s|S) ssh_into_container ;;
       t|T) take_site_backup ;;
+      l|L) follow_error_logs ;;
       m|M) manage_sites_menu ;;
       k|K) kill_container ;;
       d|D) delete_container ;;
@@ -355,6 +357,14 @@ ssh_into_container() {
   echo "Connecting to $CONTAINER_NAME via SSH"
   echo ""
   docker exec -it "$CONTAINER_ID" /bin/sh
+}
+
+follow_error_logs() {
+  start_if_stopped
+  clear
+  echo "Following error logs for $CONTAINER_NAME:"
+  echo ""
+  docker logs -f "$CONTAINER_ID"
 }
 
 # open site in default browser

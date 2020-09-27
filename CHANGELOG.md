@@ -1,3 +1,7 @@
+## Lokl Go 4.0
+
+ - easily watch error logs
+
 ## Lokl Go 3.0
 
  - support for Lokl 0.0.19
