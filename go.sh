@@ -70,7 +70,7 @@ test_curl_available() {
 }
 
 test_docker_available() {
-  if ! docker run hello-world > /dev/null 2>&1
+  if ! docker info > /dev/null 2>&1
   then
      echo "Docker doesn't seem to be suitably configured for Lokl"
      exit 1
