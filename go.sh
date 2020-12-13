@@ -107,7 +107,9 @@ create_site_choose_name() {
     LOKL_NAME="$(echo "$LOKL_NAME" | cut -c1-100)"
 
     LOKL_PORT="$(awk -v min=4000 -v max=5000 'BEGIN{srand(); print int(min+rand()*(max-min+1))}')"
-    LOKL_VERSION=0.0.19
+    # LOKL_VERSION=0.0.19
+    # LOKL_VERSION=test
+    LOKL_VERSION=php8base
     docker run -e N="$LOKL_NAME" -e P="$LOKL_PORT" \
       --name="$LOKL_NAME" -p "$LOKL_PORT":"$LOKL_PORT" \
       -d lokl/lokl:"$LOKL_VERSION"
