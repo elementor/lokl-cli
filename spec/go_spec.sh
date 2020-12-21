@@ -2,18 +2,6 @@
 Describe "go.sh"
   Include ./go.sh
 
-  Describe "hello()"
-
-    Mock date
-      echo 1546268400
-    End
-
-    It "puts greeting, but not implemented"
-      When call hello world
-      The output should eq "Hello world!"
-    End
-  End
-
   xDescribe "main_menu()"
 
     Mock date

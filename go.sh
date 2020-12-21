@@ -17,10 +17,6 @@
 #     $   sh go.sh
 #
 
-hello() {
-  echo "Hello ${1}!"
-}
-
 main_menu() {
   clear
   echo ""
