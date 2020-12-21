@@ -17,6 +17,10 @@
 #     $   sh go.sh
 #
 
+hello() {
+  echo "Hello ${1}!"
+}
+
 main_menu() {
   clear
   echo ""
@@ -475,9 +479,13 @@ get_available_container_port() {
   echo "Available container port:"
 }
 
+# allow testing without entering menu, using shellspec's var
+${__SOURCED__:+return}
+
 main_menu
 
 exit 0
+
 
 
 
