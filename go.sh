@@ -111,6 +111,7 @@ create_site_choose_name() {
     # LOKL_VERSION=test
     # TODO: allow to switch this
     LOKL_VERSION=php8
+    # LOKL_VERSION=php7
     docker run -e N="$LOKL_NAME" -e P="$LOKL_PORT" \
       --name="$LOKL_NAME" -p "$LOKL_PORT":"$LOKL_PORT" \
       -d lokl/lokl:"$LOKL_VERSION"
