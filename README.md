@@ -14,7 +14,7 @@ Usage
 Build status
 ============
 
-[![CircleCI](https://circleci.com/gh/lokl-dev/go.svg?style=svg)](https://circleci.com/gh/lokl-dev/go)
+[![CircleCI](https://circleci.com/gh/leonstafford/lokl-cli.svg?style=svg)](https://circleci.com/gh/leonstafford/lokl-cli)
 
 Testing
 =======
