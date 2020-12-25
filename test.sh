@@ -17,3 +17,5 @@
 # run shellcheck against all files in project, excluding .git dir
 find . -type f -not -path '*/\.git/*' -name '*.sh' \
   -exec shellcheck {} \;
+
+shellspec --kcov

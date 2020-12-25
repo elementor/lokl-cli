@@ -1,5 +1,5 @@
-lokl-go
-=======
+lokl-cli
+========
 
 Interactive script for launching and managing your [lokl](https://lokl.dev) websites.
 
@@ -16,7 +16,11 @@ Build status
 
 [![CircleCI](https://circleci.com/gh/lokl-dev/go.svg?style=svg)](https://circleci.com/gh/lokl-dev/go)
 
-Demo (work in progress)
-=======================
+Testing
+=======
 
-[![asciicast](https://asciinema.org/a/372KPRwvyf2f6RhQsDo5Y1Qn3.svg)](https://asciinema.org/a/372KPRwvyf2f6RhQsDo5Y1Qn3)
+ - `shellspec`
+
+With code coverage report:
+
+ - `shellspec --kcov`

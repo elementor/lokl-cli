@@ -2,7 +2,12 @@ version: 2.1
 orbs:
   shellcheck: circleci/shellcheck@1.3.16
 workflows:
-  shellcheck:
+  codequality:
     jobs:
       - shellcheck/check:
           exclude: ./git/*
+      - shellspec:
+          steps:
+            - run: curl -fsSL https://git.io/shellspec | sh -s -- -y
+            - run: sudo ln -s ${HOME}/.local/lib/shellspec/shellspec /usr/local/bin/shellspec
+            - run: shellspec --kcov
