@@ -6,6 +6,7 @@ jobs:
     docker:
      - image: cimg/base:stable
     steps:
+      - checkout
       - run: curl -fsSL https://git.io/shellspec | sh -s -- -y
       - run: sudo ln -s ${HOME}/.local/lib/shellspec/shellspec /usr/local/bin/shellspec
       - run: sudo apt update -y
