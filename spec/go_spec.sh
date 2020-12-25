@@ -2,16 +2,13 @@
 Describe "go.sh"
   Include ./go.sh
 
-  xDescribe "main_menu()"
-
-    Mock date
-      echo 1546268400
-    End
+  Describe "main_menu()"
 
     It "exits when q is given"
       Data "q"
-      When call main_menu
-      The output should eq "hello world"
+      When run main_menu
+      The stdout should include 'Lokl launcher & management script'
+      The status should be success
     End
   End
 

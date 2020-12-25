@@ -482,7 +482,3 @@ main_menu
 
 exit 0
 
-
-
-
-
