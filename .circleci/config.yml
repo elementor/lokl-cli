@@ -8,6 +8,7 @@ jobs:
     steps:
       - run: curl -fsSL https://git.io/shellspec | sh -s -- -y
       - run: sudo ln -s ${HOME}/.local/lib/shellspec/shellspec /usr/local/bin/shellspec
+      - run: sudo apt update -y
       - run: sudo apt install -y kcov
       - run: shellspec --kcov
 
