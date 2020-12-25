@@ -11,7 +11,7 @@ jobs:
       - run: sudo ln -s ${HOME}/.local/lib/shellspec/shellspec /usr/local/bin/shellspec
       - run: sudo apt update -y
       - run: sudo apt install -y kcov
-      - run: export TERM=${TERM:-dumb && shellspec --kcov
+      - run: export TERM=${TERM:-dumb} && shellspec --kcov
 
 workflows:
   codequality:
