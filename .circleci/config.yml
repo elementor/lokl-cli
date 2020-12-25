@@ -4,7 +4,7 @@ orbs:
 jobs:
   shellspec:
     docker:
-     - image: circleci/go:latest
+     - image: circleci/golang:latest
     steps:
       - run: curl -fsSL https://git.io/shellspec | sh -s -- -y
       - run: sudo ln -s ${HOME}/.local/lib/shellspec/shellspec /usr/local/bin/shellspec
