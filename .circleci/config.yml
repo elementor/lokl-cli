@@ -12,6 +12,8 @@ jobs:
       - run: sudo apt update -y
       - run: sudo apt install -y kcov
       - run: export TERM=${TERM:-dumb} && shellspec --kcov
+      - store_artifacts:
+          path: coverage
 
 workflows:
   codequality:

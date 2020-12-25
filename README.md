@@ -19,8 +19,13 @@ Build status
 Testing
 =======
 
+ - `shellcheck`
  - `shellspec`
 
 With code coverage report:
 
  - `shellspec --kcov`
+
+For convenience, you can run `sh test.sh`.
+
+CircleCI config runs both of these commands.
