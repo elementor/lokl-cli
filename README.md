@@ -29,3 +29,6 @@ With code coverage report:
 For convenience, you can run `sh test.sh`.
 
 CircleCI config runs both of these commands.
+
+To help debugging while testing, `tail -f` a file in `/tmp/` and echo
+ out to that within your tests.

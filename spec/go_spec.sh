@@ -15,6 +15,7 @@ Describe "go.sh"
   Describe "test_curl_available()"
 
     It "returns OK when cURL is available"
+      # simulate curl available
       command() {
         echo "/usr/bin/curl"
       }
@@ -22,12 +23,44 @@ Describe "go.sh"
       The result of "test_curl_available()" should be successful
     End
 
-    It "exits when cURL is available"
+    It "exits with error code when cURL is missing"
+      # simulate curl missing
       command() {
         exit 1
       }
 
       The result of "test_curl_available()" should not be successful
+    End
+  End
+
+  Describe "create_site_choose_name()"
+
+    It "opens create_site_choose_name when c is given"
+
+     # mock test_core_capabilities as not core to this test 
+      test_core_capabilities() {
+        clear
+        echo ""
+        echo "Checking system requirements... "
+        echo ""
+        # skip these commands
+        # test_docker_available
+        # test_curl_available
+      }
+
+      # mock docker run in launching the container
+      docker() {
+        echo "mocking launching container...."
+      }
+
+      curl() {
+        echo "mocking successful curl to container..."
+      }
+
+      Data "mywptestsitename"
+      When run create_site_choose_name
+      The stdout should include 'Lokl launcher & management script'
+      The status should be success
     End
   End
 

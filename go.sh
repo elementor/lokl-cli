@@ -90,7 +90,10 @@ create_site_choose_name() {
   echo ""
   echo "Type your site name, then the Enter key: "
   echo ""
+
   read -r create_site_name_choice
+
+  echo "DEBUG: $create_site_name_choice" >> /tmp/testing
 
   # strip all non-alpha characters from string, convert to lowercase
   LOKL_NAME="$(echo "$create_site_name_choice" | tr -cd '[:alnum:]-' | \
@@ -101,6 +104,14 @@ create_site_choose_name() {
 
   # check name is not empty
   if [ "$LOKL_NAME" = "" ]; then
+
+    if [ "$LOKL_TEST_MODE" ] ;then
+      echo "DEBUG: lokl name empty" >> /tmp/testing
+      # early exit when testing for easier assertion
+      exit 0 
+    fi
+
+    # re-ask for name entry if input was invalid
     create_site_choose_name
   else
     # trim to 100 chars if over
@@ -126,6 +137,7 @@ create_site_choose_name() {
     max_attempts=12
 
     until curl --output /dev/null --silent --head --fail "http://localhost:$LOKL_PORT"; do
+
         if [ ${attempt_counter} -eq ${max_attempts} ];then
           echo "Timed out waiting for site to come online..."
           exit 1
@@ -142,6 +154,13 @@ create_site_choose_name() {
     echo "http://localhost:$LOKL_PORT"
     echo ""
     echo "Press any key to manage sites:"
+
+    # return for assertion while testing
+    if [ "$LOKL_TEST_MODE" ] ;then
+      echo "DEBUG: lokl name empty" >> /tmp/testing
+      # early exit when testing for easier assertion
+      exit 0 
+    fi
 
     read -r ""
     manage_sites_menu
@@ -474,6 +493,12 @@ get_available_container_port() {
 
   echo "Available container port:"
 }
+
+# if running tests, export var to use as flag within functions
+# TODO: could put this back in spec_helper, but may annoy shellcheck
+if [ "${__SOURCED__}" ] ;then
+  export LOKL_TEST_MODE=1
+fi
 
 # allow testing without entering menu, using shellspec's var
 ${__SOURCED__:+return}
