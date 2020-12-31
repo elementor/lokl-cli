@@ -497,7 +497,7 @@ get_available_container_port() {
 }
 
 get_random_port() {
-    local random_port="$(awk -v min=4000 -v max=5000 'BEGIN{srand(); print int(min+rand()*(max-min+1))}')"
+    random_port="$(awk -v min=4000 -v max=5000 'BEGIN{srand(); print int(min+rand()*(max-min+1))}')"
     # echo value to stdout to be used in cmd substitution
     echo "$random_port"
 }
