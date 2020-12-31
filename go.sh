@@ -117,7 +117,9 @@ create_site_choose_name() {
     # trim to 100 chars if over
     LOKL_NAME="$(echo "$LOKL_NAME" | cut -c1-100)"
 
-    LOKL_PORT="$(awk -v min=4000 -v max=5000 'BEGIN{srand(); print int(min+rand()*(max-min+1))}')"
+
+    LOKL_PORT="$(get_random_port)"
+
     # LOKL_VERSION=0.0.19
     # LOKL_VERSION=test
     # TODO: allow to switch this
@@ -494,6 +496,11 @@ get_available_container_port() {
   echo "Available container port:"
 }
 
+get_random_port() {
+    local random_port="$(awk -v min=4000 -v max=5000 'BEGIN{srand(); print int(min+rand()*(max-min+1))}')"
+    # echo value to stdout to be used in cmd substitution
+    echo "$random_port"
+}
 # if running tests, export var to use as flag within functions
 # TODO: could put this back in spec_helper, but may annoy shellcheck
 if [ "${__SOURCED__}" ] ;then

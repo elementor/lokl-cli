@@ -57,9 +57,15 @@ Describe "go.sh"
         echo "mocking successful curl to container..."
       }
 
+      # mock random port
+      get_random_port() {
+        echo "4070"
+      }
+
       Data "mywptestsitename"
       When run create_site_choose_name
-      The stdout should include 'Lokl launcher & management script'
+      The stdout should include 'Your new Lokl WordPress site, mywptestsitename, is ready at:'
+      The stdout should include 'http://localhost:4070'
       The status should be success
     End
   End
