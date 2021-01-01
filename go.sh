@@ -24,8 +24,7 @@
 #     sh go.sh
 
 lokl_log() {
-  echo "DEBUG: $1" >> /tmp/lokldebuglog
-
+  echo "$(date '+%H:%M:%S'): $1" >> /tmp/lokldebuglog
 } 
 
 set_docker_tag() {
@@ -116,7 +115,7 @@ create_site_choose_name() {
 
   read -r create_site_name_choice
 
-  echo "DEBUG: $create_site_name_choice" >> /tmp/lokldebuglog
+  lokl_log "$create_site_name_choice"
 
   # strip all non-alpha characters from string, convert to lowercase
   LOKL_NAME="$(echo "$create_site_name_choice" | tr -cd '[:alnum:]-' | \
@@ -128,7 +127,7 @@ create_site_choose_name() {
   # check name is not empty
   if [ "$LOKL_NAME" = "" ]; then
     if [ "$LOKL_TEST_MODE" ] ;then
-      echo "DEBUG: lokl name empty" >> /tmp/lokldebuglog
+      lokl_log "Empty or invalid site name entered"
       # early exit when testing for easier assertion
       exit 1 
     fi
@@ -139,9 +138,12 @@ create_site_choose_name() {
     # trim to 100 chars if over
     # TODO: allow passing as args
     LOKL_NAME="$(echo "$LOKL_NAME" | cut -c1-100)"
+
+    lokl_log "User input site name: $LOKL_NAME"
+
     LOKL_PORT="$(get_random_port)"
 
-    echo "DEBUG: $LOKL_NAME" >> /tmp/lokldebuglog
+    lokl_log "Random port number generated: $LOKL_PORT"
 
     docker run -e N="$LOKL_NAME" -e P="$LOKL_PORT" \
       --name="$LOKL_NAME" -p "$LOKL_PORT":"$LOKL_PORT" \
@@ -177,8 +179,7 @@ create_site_choose_name() {
 
     # return for assertion while testing
     if [ "$LOKL_TEST_MODE" ] ;then
-      echo "DEBUG: lokl name empty" >> /tmp/lokldebuglog
-      # early exit when testing for easier assertion
+      lokl_log "Returning early for assertion under test runner"
       exit 0 
     fi
 
@@ -522,6 +523,7 @@ get_random_port() {
 # if running tests, export var to use as flag within functions
 # TODO: could put this back in spec_helper, but may annoy shellcheck
 if [ "${__SOURCED__}" ] ;then
+  lokl_log "### LOKL TEST MODE ENABLED ###"
   export LOKL_TEST_MODE=1
 fi
 
@@ -532,16 +534,14 @@ LOKL_DOCKER_TAG="$(set_docker_tag)"
 LOKL_NAME="$(set_site_name)"
 LOKL_PORT="$(set_site_port)"
 
-echo "DEBUG: $LOKL_NAME" >> /tmp/lokldebuglog
-echo "DEBUG: $LOKL_DOCKER_TAG" >> /tmp/lokldebuglog
-echo "DEBUG: $LOKL_PORT" >> /tmp/lokldebuglog
-
 # skip menu if minimum required arguments are set
 if [ "${LOKL_NAME}" ] ;then
-  lokl_log "Site Name Argument Passed: $LOKL_NAME"
   lokl_log "Skipping wizard"
+  lokl_log "Site Name Argument Passed: $LOKL_NAME"
+  lokl_log "Site Port Argument Passed: $LOKL_PORT"
+  lokl_log "Docker Tag Argument Passed: $LOKL_DOCKER_TAG"
 
-  # create_site_function with argument
+  # TODO: create_site_function with argument
   exit 1
 else
   main_menu
