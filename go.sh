@@ -18,7 +18,7 @@
 #
 #     to skip the wizard, call the script with vars set:
 #
-#     lokl_php_ver=8 \ 
+#     lokl_php_ver=php8 \ 
 #     lokl_site_name=bananapants \
 #     lokl_site_port=4444 \
 #     sh go.sh
@@ -94,7 +94,7 @@ test_curl_available() {
 test_docker_available() {
   if ! docker run --rm hello-world > /dev/null 2>&1
   then
-     echo "Docker doesn't seem to be suitably configured for Lokl"
+     echo "Docker doesn't seem to be running or suitably configured for Lokl"
      exit 1
   fi
 }

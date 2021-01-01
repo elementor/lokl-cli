@@ -12,6 +12,23 @@ Describe "go.sh"
     End
   End
 
+
+  Describe "set_docker_tag()"
+    It "defaults to php8 if $lokl_php_ver not set"
+      When run set_docker_tag
+      The stderr should include 'php8'
+      The status should equal 1
+    End
+
+    It "prints to stdout if $lokl_php_ver set"
+      lokl_php_ver="php7"
+
+      When run set_docker_tag
+      The stdout should include 'php7'
+      The status should equal 0
+    End
+  End
+
   Describe "test_curl_available()"
 
     It "returns OK when cURL is available"
