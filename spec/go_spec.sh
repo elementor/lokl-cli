@@ -12,10 +12,45 @@ Describe "go.sh"
     End
   End
 
+  Describe "set_site_port()"
+    It "remains empty if $lokl_site_port not set"
+      When run set_site_port
+      # TODO: terrible assertions, try to redirect output on errors
+      The stderr should include ''
+      The status should equal 1
+    End
+
+    It "prints to stdout if $lokl_site_port set"
+      lokl_site_port="4444"
+
+      When run set_site_port
+      The stdout should include '4444'
+      The status should equal 0
+    End
+  End
+
+  Describe "set_site_name()"
+    It "remains empty if $lokl_site_name not set"
+      When run set_site_name
+      # TODO: terrible assertions, try to redirect output on errors
+      The stderr should include ''
+      The status should equal 1
+    End
+
+    It "prints to stdout if $lokl_site_name set"
+      lokl_site_name="mytestwpsitename"
+
+      When run set_site_name
+      The stdout should include 'mytestwpsitename'
+      The status should equal 0
+    End
+  End
+
 
   Describe "set_docker_tag()"
     It "defaults to php8 if $lokl_php_ver not set"
       When run set_docker_tag
+      # TODO: terrible assertions, try to redirect output on errors
       The stderr should include 'php8'
       The status should equal 1
     End
