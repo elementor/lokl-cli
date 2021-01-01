@@ -65,23 +65,26 @@ Describe "go.sh"
   End
 
   Describe "test_curl_available()"
-
     It "returns OK when cURL is available"
       # simulate curl available
       command() {
-        echo "/usr/bin/curl"
+        echo '/usr/bin/curl'
+        return 0
       }
 
-      The result of "test_curl_available()" should be successful
+      When run test_curl_available
+      The status should equal 0
     End
 
     It "exits with error code when cURL is missing"
       # simulate curl missing
       command() {
-        exit 1
+        return 1
       }
 
-      The result of "test_curl_available()" should not be successful
+      When run test_curl_available
+      The stdout should include "cURL doesn't seem to be installed."
+      The status should equal 1
     End
   End
 
