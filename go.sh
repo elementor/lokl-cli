@@ -108,7 +108,7 @@ create_site_choose_name() {
     if [ "$LOKL_TEST_MODE" ] ;then
       echo "DEBUG: lokl name empty" >> /tmp/testing
       # early exit when testing for easier assertion
-      exit 0 
+      exit 1 
     fi
 
     # re-ask for name entry if input was invalid
