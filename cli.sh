@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# lokl-go: Lokl WordPress site launcher & manager
+# lokl-cli: Lokl WordPress site launcher & manager
 #
 # Allows users to easily spin-up and manage new Lokl WordPress instances
 #
@@ -10,18 +10,18 @@
 #
 #     run from internet:
 #
-#     $   \sh -c "$(curl -sSl 'https://lokl.dev/go?v=2')"
+#     $   \sh -c "$(curl -sSl 'https://lokl.dev/go?v=4')"
 #
 #     run locally:
 #
-#     $   sh go.sh
+#     $   sh cli.sh
 #
 #     to skip the wizard, call the script with vars set:
 #
 #     lokl_php_ver=php8 \ 
 #     lokl_site_name=bananapants \
 #     lokl_site_port=4444 \
-#     sh go.sh
+#     sh cli.sh
 
 lokl_log() {
   echo "$(date '+%H:%M:%S'): $1" >> /tmp/lokldebuglog

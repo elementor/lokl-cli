@@ -1,6 +1,6 @@
 # shellcheck shell=sh
-Describe "go.sh"
-  Include ./go.sh
+Describe "cli.sh"
+  Include ./cli.sh
 
   Describe "main_menu()"
 
