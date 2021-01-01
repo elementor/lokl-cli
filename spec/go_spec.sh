@@ -88,6 +88,29 @@ Describe "go.sh"
     End
   End
 
+  Describe "test_docker_available()"
+    It "returns OK when sample image runs OK"
+      # simulate docker available and hello-world ran OK
+      docker() {
+        return 0
+      }
+
+      When run test_docker_available
+      The status should equal 0
+    End
+
+    It "exits with error code when can't run sample image"
+      # simulate docker unavailable or hello-world didn't run OK
+      docker() {
+        return 1
+      }
+
+      When run test_docker_available
+      The stdout should include "Docker doesn't seem to be running or suitably configured for Lokl"
+      The status should equal 1
+    End
+  End
+
   Describe "create_site_choose_name()"
     It "launches container with name and random port when proper name is given"
      # mock test_core_capabilities as not core to this test 
@@ -99,6 +122,7 @@ Describe "go.sh"
         # skip these commands
         # test_docker_available
         # test_curl_available
+        # TODO: specify fn exit codes with `return`
       }
 
       # mock docker run in launching the container
