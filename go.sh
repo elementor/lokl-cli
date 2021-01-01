@@ -117,6 +117,7 @@ create_site_choose_name() {
 
   lokl_log "$create_site_name_choice"
 
+  # TODO: assign vs mutate to allow code coverage
   # strip all non-alpha characters from string, convert to lowercase
   LOKL_NAME="$(echo "$create_site_name_choice" | tr -cd '[:alnum:]-' | \
     tr '[:upper:]' '[:lower:]')"
