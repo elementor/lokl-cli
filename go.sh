@@ -16,6 +16,29 @@
 #
 #     $   sh go.sh
 #
+#     to skip the wizard, call the script with vars set:
+#
+#     lokl_php_ver=8 \ 
+#     lokl_site_name=bananapants \
+#     lokl_site_port=4444 \
+#     sh go.sh
+
+lokl_log() {
+  echo "DEBUG: $1" >> /tmp/lokldebuglog
+
+} 
+
+set_docker_tag() {
+  echo "${lokl_php_ver:?php8}"
+}
+
+set_site_name() {
+  echo "${lokl_site_name:?''}"
+}
+
+set_site_port() {
+  echo "${lokl_site_port:?''}"
+}
 
 main_menu() {
   clear
@@ -93,7 +116,7 @@ create_site_choose_name() {
 
   read -r create_site_name_choice
 
-  echo "DEBUG: $create_site_name_choice" >> /tmp/testing
+  echo "DEBUG: $create_site_name_choice" >> /tmp/lokldebuglog
 
   # strip all non-alpha characters from string, convert to lowercase
   LOKL_NAME="$(echo "$create_site_name_choice" | tr -cd '[:alnum:]-' | \
@@ -104,9 +127,8 @@ create_site_choose_name() {
 
   # check name is not empty
   if [ "$LOKL_NAME" = "" ]; then
-
     if [ "$LOKL_TEST_MODE" ] ;then
-      echo "DEBUG: lokl name empty" >> /tmp/testing
+      echo "DEBUG: lokl name empty" >> /tmp/lokldebuglog
       # early exit when testing for easier assertion
       exit 1 
     fi
@@ -115,19 +137,15 @@ create_site_choose_name() {
     create_site_choose_name
   else
     # trim to 100 chars if over
+    # TODO: allow passing as args
     LOKL_NAME="$(echo "$LOKL_NAME" | cut -c1-100)"
-
-
     LOKL_PORT="$(get_random_port)"
 
-    # LOKL_VERSION=0.0.19
-    # LOKL_VERSION=test
-    # TODO: allow to switch this
-    LOKL_VERSION=php8
-    # LOKL_VERSION=php7
+    echo "DEBUG: $LOKL_NAME" >> /tmp/lokldebuglog
+
     docker run -e N="$LOKL_NAME" -e P="$LOKL_PORT" \
       --name="$LOKL_NAME" -p "$LOKL_PORT":"$LOKL_PORT" \
-      -d lokl/lokl:"$LOKL_VERSION"
+      -d lokl/lokl:"$LOKL_DOCKER_TAG"
 
     clear
     echo "Launching your new Lokl WordPress site!"
@@ -159,7 +177,7 @@ create_site_choose_name() {
 
     # return for assertion while testing
     if [ "$LOKL_TEST_MODE" ] ;then
-      echo "DEBUG: lokl name empty" >> /tmp/testing
+      echo "DEBUG: lokl name empty" >> /tmp/lokldebuglog
       # early exit when testing for easier assertion
       exit 0 
     fi
@@ -510,7 +528,25 @@ fi
 # allow testing without entering menu, using shellspec's var
 ${__SOURCED__:+return}
 
-main_menu
+LOKL_DOCKER_TAG="$(set_docker_tag)"
+LOKL_NAME="$(set_site_name)"
+LOKL_PORT="$(set_site_port)"
+
+echo "DEBUG: $LOKL_NAME" >> /tmp/lokldebuglog
+echo "DEBUG: $LOKL_DOCKER_TAG" >> /tmp/lokldebuglog
+echo "DEBUG: $LOKL_PORT" >> /tmp/lokldebuglog
+
+# skip menu if minimum required arguments are set
+if [ "${LOKL_NAME}" ] ;then
+  lokl_log "Site Name Argument Passed: $LOKL_NAME"
+  lokl_log "Skipping wizard"
+
+  # create_site_function with argument
+  exit 1
+else
+  main_menu
+fi
+
 
 exit 0
 

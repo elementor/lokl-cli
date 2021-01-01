@@ -30,5 +30,11 @@ For convenience, you can run `sh test.sh`.
 
 CircleCI config runs both of these commands.
 
-To help debugging while testing, `tail -f` a file in `/tmp/` and echo
- out to that within your tests.
+Debug log
+=========
+
+To aid in development or user support, lokl-cli appends to a log file
+ in your system's temp directory, which can be followed by:
+
+`touch /tmp/lokldebuglog && tail -F /tmp/lokldebuglog`
+
