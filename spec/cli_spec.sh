@@ -2,6 +2,38 @@
 Describe "cli.sh"
   Include ./cli.sh
 
+  fDescribe "test_core_capabilities()"
+    It "passes when docker and curl are available"
+
+      test_docker_available(){
+        return 0
+      }
+
+      test_curl_available(){
+        return 0
+      }
+
+      When call test_core_capabilities
+      The output should include "Checking system requirements..."
+      The status should be success
+    End
+
+    It "fails when docker and curl aren't available"
+
+      test_docker_available(){
+        return 1
+      }
+
+      test_curl_available(){
+        return 1
+      }
+
+      When call test_core_capabilities
+      The output should include "Checking system requirements..."
+      The status should be failure
+    End
+  End
+
   Describe "sanitize_site_name()"
     It "strips all non-alpha characters from string"
       When call sanitize_site_name "mywpte\$%@#\$@stsitename"
