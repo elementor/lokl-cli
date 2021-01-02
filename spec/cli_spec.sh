@@ -176,39 +176,6 @@ Describe "cli.sh"
       The status should be success
     End
 
-    It "strips out invalid characters from site name"
-     # mock test_core_capabilities as not core to this test 
-      test_core_capabilities() {
-        clear
-        echo ""
-        echo "Checking system requirements... "
-        echo ""
-        # skip these commands
-        # test_docker_available
-        # test_curl_available
-      }
-
-      # mock docker run in launching the container
-      docker() {
-        echo "mocking launching container...."
-      }
-
-      curl() {
-        echo "mocking successful curl to container..."
-      }
-
-      # mock random port
-      get_random_port() {
-        echo "4070"
-      }
-
-      Data "mywpte\$%@#\$@stsitename"
-      When run create_site_choose_name
-      The stdout should include 'Your new Lokl WordPress site, mywptestsitename, is ready at:'
-      The stdout should include 'http://localhost:4070'
-      The status should be success
-    End
-
     It "prompts for site name again if input invalid"
      # mock test_core_capabilities as not core to this test 
       test_core_capabilities() {
@@ -239,39 +206,6 @@ Describe "cli.sh"
       When run create_site_choose_name
       The stdout should include 'Choose a name for your new Lokl WordPress sit'
       The status should be failure
-    End
-
-    It "converts sitename to lowercase, alpha only"
-     # mock test_core_capabilities as not core to this test 
-      test_core_capabilities() {
-        clear
-        echo ""
-        echo "Checking system requirements... "
-        echo ""
-        # skip these commands
-        # test_docker_available
-        # test_curl_available
-      }
-
-      # mock docker run in launching the container
-      docker() {
-        echo "mocking launching container...."
-      }
-
-      curl() {
-        echo "mocking successful curl to container..."
-      }
-
-      # mock random port
-      get_random_port() {
-        echo "4070"
-      }
-
-      Data "MYWPTEST SITE NAME"
-      When run create_site_choose_name
-      The stdout should include 'Your new Lokl WordPress site, mywptestsitename, is ready at:'
-      The stdout should include 'http://localhost:4070'
-      The status should be success
     End
   End
 End
