@@ -132,10 +132,6 @@ create_site_choose_name() {
     # re-ask for name entry if input was invalid
     create_site_choose_name
   else
-    # trim to 100 chars if over
-    # TODO: allow passing as args
-    LOKL_NAME="$(echo "$LOKL_NAME" | cut -c1-100)"
-
     lokl_log "User input site name: $LOKL_NAME"
 
     LOKL_PORT="$(get_random_port)"
@@ -524,8 +520,10 @@ sanitize_site_name() {
 
   # strip all non-alpha characters from string, converts to lowercase
   # trims all hyphens
+  # trim to 100 chars if over
   echo "$USER_SITE_NAME_CHOICE" | tr -cd '[:alnum:]-' | \
-    tr '[:upper:]' '[:lower:]' | sed 's/--//g' | sed 's/^-//' | sed 's/-$//'
+    tr '[:upper:]' '[:lower:]' | sed 's/--//g' | sed 's/^-//' | sed 's/-$//' | \
+    cut -c1-100
 }
 
 # if running tests, export var to use as flag within functions

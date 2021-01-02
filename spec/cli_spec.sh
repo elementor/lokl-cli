@@ -7,7 +7,7 @@ Describe "cli.sh"
 
   # TODO: use more like this `When call` with args more for shell
   # rn calls as recommended in docs
-  fDescribe "sanitize_site_name()"
+  Describe "sanitize_site_name()"
     It "strips all non-alpha characters from string"
       When call sanitize_site_name "mywpte\$%@#\$@stsitename"
       The output should equal "mywptestsitename"
