@@ -115,15 +115,11 @@ create_site_choose_name() {
 
   read -r create_site_name_choice
 
-  lokl_log "$create_site_name_choice"
+  lokl_log "User input desired sitename: $create_site_name_choice"
 
-  # TODO: assign vs mutate to allow code coverage
-  # strip all non-alpha characters from string, convert to lowercase
-  LOKL_NAME="$(echo "$create_site_name_choice" | tr -cd '[:alnum:]-' | \
-    tr '[:upper:]' '[:lower:]')"
+  LOKL_NAME="$(sanitize_site_name "$create_site_name_choice")"
 
-  # trim hyphens from start and end and double-hyphens
-  LOKL_NAME="$(echo "$LOKL_NAME" | sed 's/--//g' | sed 's/^-//' | sed 's/-$//')"
+  lokl_log "Sanitized sitename:: $LOKL_NAME"
 
   # check name is not empty
   if [ "$LOKL_NAME" = "" ]; then
@@ -521,6 +517,22 @@ get_random_port() {
     # echo value to stdout to be used in cmd substitution
     echo "$random_port"
 }
+
+
+sanitize_site_name() {
+  USER_SITE_NAME_CHOICE="$1"
+
+  # strip all non-alpha characters from string, convert to lowercase
+  # trim hyphens from start and end and double-hyphens
+  SITE_NAME="$(echo "$USER_SITE_NAME_CHOICE" | tr -cd '[:alnum:]-' | \
+    tr '[:upper:]' '[:lower:]' | sed 's/--//g' | sed 's/^-//' | sed 's/-$//')"
+
+  # trim hyphens from start and end and double-hyphens
+  # LOKL_NAME="$(echo "$LOKL_NAME" | sed 's/--//g' | sed 's/^-//' | sed 's/-$//')"
+
+  echo "$SITE_NAME"
+}
+
 # if running tests, export var to use as flag within functions
 # TODO: could put this back in spec_helper, but may annoy shellcheck
 if [ "${__SOURCED__}" ] ;then

@@ -2,8 +2,20 @@
 Describe "cli.sh"
   Include ./cli.sh
 
-  Describe "main_menu()"
+  # strip all non-alpha characters from string, convert to lowercase
+  # trim hyphens from start and end and double-hyphens
 
+  fDescribe "sanitize_site_name()"
+    It "strips all non-alpha characters from string"
+      # Data "mywpte\$%@#\$@stsitename"
+      When call sanitize_site_name "mywpte\$%@#\$@stsitename"
+      The output should equal "mywptestsitename"
+      The variable SITE_NAME should equal "mywptestsitename"
+      The status should be success
+    End
+  End
+
+  Describe "main_menu()"
     It "exits when q is given"
       Data "q"
       When run main_menu
