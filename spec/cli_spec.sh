@@ -2,6 +2,21 @@
 Describe "cli.sh"
   Include ./cli.sh
 
+  Describe "get_random_port()"
+    It "returns random port between 4000 and 5000"
+			# allow shellcheck to think var is defined
+			acceptable_port_number=
+
+			acceptable_port_number() {
+				[ "$acceptable_port_number" -ge 3999 ] && [ "$acceptable_port_number" -le 5001 ]	
+			}
+
+      When call get_random_port
+      The output should satisfy acceptable_port_number
+      The status should be success
+    End
+	End
+
   Describe "get_lokl_container_ids()"
     It "returns only Lokl container IDs"
 
