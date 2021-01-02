@@ -2,11 +2,6 @@
 Describe "cli.sh"
   Include ./cli.sh
 
-  # strip all non-alpha characters from string, convert to lowercase
-  # trim hyphens from start and end and double-hyphens
-
-  # TODO: use more like this `When call` with args more for shell
-  # rn calls as recommended in docs
   Describe "sanitize_site_name()"
     It "strips all non-alpha characters from string"
       When call sanitize_site_name "mywpte\$%@#\$@stsitename"
