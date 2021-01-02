@@ -38,3 +38,8 @@ To aid in development or user support, lokl-cli appends to a log file
 
 `touch /tmp/lokldebuglog && tail -F /tmp/lokldebuglog`
 
+Style Guide
+===========
+
+In lieu of an automatic beautifier, refer to [Google Shellguide](https://google.github.io/styleguide/shellguide.html) if unsure. If you know of something like PHPCodeSniffer and PHPCodeBeautifier to compliment ShellCheck, please let me know!
+
