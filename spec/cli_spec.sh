@@ -5,12 +5,30 @@ Describe "cli.sh"
   # strip all non-alpha characters from string, convert to lowercase
   # trim hyphens from start and end and double-hyphens
 
+  # TODO: use more like this `When call` with args more for shell
+  # rn calls as recommended in docs
   fDescribe "sanitize_site_name()"
     It "strips all non-alpha characters from string"
-      # Data "mywpte\$%@#\$@stsitename"
       When call sanitize_site_name "mywpte\$%@#\$@stsitename"
       The output should equal "mywptestsitename"
-      The variable SITE_NAME should equal "mywptestsitename"
+      The status should be success
+    End
+
+    It "converts chars to lowercase"
+      When call sanitize_site_name "MYWPTEST SITE NAME"
+      The output should equal "mywptestsitename"
+      The status should be success
+    End
+
+    It "trims all hyphens"
+      When call sanitize_site_name "-mywptest--sitename-"
+      The output should equal "mywptestsitename"
+      The status should be success
+    End
+
+    It "trims to 100 characters"
+      When call sanitize_site_name "drbvkgdeqommcfsxrqfijlbzuayskgahltymfpckuexhykigdtoisuemtfqcabcdjdsfiipwkkowhspxjxwqkkecthisistheendoverflow"
+      The output should equal "drbvkgdeqommcfsxrqfijlbzuayskgahltymfpckuexhykigdtoisuemtfqcabcdjdsfiipwkkowhspxjxwqkkecthisistheend"
       The status should be success
     End
   End

@@ -522,15 +522,10 @@ get_random_port() {
 sanitize_site_name() {
   USER_SITE_NAME_CHOICE="$1"
 
-  # strip all non-alpha characters from string, convert to lowercase
-  # trim hyphens from start and end and double-hyphens
-  SITE_NAME="$(echo "$USER_SITE_NAME_CHOICE" | tr -cd '[:alnum:]-' | \
-    tr '[:upper:]' '[:lower:]' | sed 's/--//g' | sed 's/^-//' | sed 's/-$//')"
-
-  # trim hyphens from start and end and double-hyphens
-  # LOKL_NAME="$(echo "$LOKL_NAME" | sed 's/--//g' | sed 's/^-//' | sed 's/-$//')"
-
-  echo "$SITE_NAME"
+  # strip all non-alpha characters from string, converts to lowercase
+  # trims all hyphens
+  echo "$USER_SITE_NAME_CHOICE" | tr -cd '[:alnum:]-' | \
+    tr '[:upper:]' '[:lower:]' | sed 's/--//g' | sed 's/^-//' | sed 's/-$//'
 }
 
 # if running tests, export var to use as flag within functions
