@@ -187,8 +187,8 @@ manage_sites_menu() {
   echo ""
   echo "Your Lokl WordPress sites"
   echo ""
-  # get all lokl container IDs
-  LOKL_CONTAINERS="$(docker ps -a | awk '{ print $1,$2 }' | grep lokl | awk '{print $1 }')"
+
+  LOKL_CONTAINERS="$(get_lokl_container_ids)"
 
   # empty flatfile lokl containers cache
   rm -Rf /tmp/lokl_containers_cache/*
@@ -509,11 +509,13 @@ get_available_container_port() {
 }
 
 get_random_port() {
-    random_port="$(awk -v min=4000 -v max=5000 'BEGIN{srand(); print int(min+rand()*(max-min+1))}')"
     # echo value to stdout to be used in cmd substitution
-    echo "$random_port"
+    awk -v min=4000 -v max=5000 'BEGIN{srand(); print int(min+rand()*(max-min+1))}'
 }
 
+get_lokl_container_ids() {
+  docker ps -a | awk '{ print $1,$2 }' | grep lokl | awk '{print $1 }'
+}
 
 sanitize_site_name() {
   USER_SITE_NAME_CHOICE="$1"

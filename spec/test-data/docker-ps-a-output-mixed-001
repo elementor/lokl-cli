@@ -1,0 +1,14 @@
+CONTAINER ID   IMAGE                COMMAND     CREATED        STATUS                     PORTS                                                            NAMES
+5577ddd81ed7   lokl/lokl:php8       "/run.sh"   2 days ago     Exited (255) 2 days ago    3465/tcp, 4000-4240/tcp, 4242-5000/tcp, 0.0.0.0:4241->4241/tcp   mywptestsitename
+877887f62d48   hello-world          "/hello"    11 days ago    Created                                                                                     fervent_buck
+6ff99c2ca462   lokl/lokl:php8       "/run.sh"   2 weeks ago    Exited (255) 3 days ago    3465/tcp, 4000-4046/tcp, 4048-5000/tcp, 0.0.0.0:4047->4047/tcp   areal8site
+220e9e723627   hello-world          "/hello"    2 weeks ago    Exited (0) 2 weeks ago                                                                      relaxed_dewdney
+f089aa00ac98   lokl/lokl:php7       "/run.sh"   2 weeks ago    Exited (255) 3 days ago    3466/tcp, 4000-4909/tcp, 4911-5000/tcp, 0.0.0.0:4910->4910/tcp   anew8site
+0560af546278   hello-world          "/hello"    2 weeks ago    Exited (0) 2 weeks ago                                                                      compassionate_cannon
+0f99bab56522   hello-world          "/hello"    2 weeks ago    Exited (0) 2 weeks ago                                                                      nice_satoshi
+11f7edc8a67b   hello-world          "/hello"    2 weeks ago    Exited (0) 2 weeks ago                                                                      serene_bassi
+7874d8ccd920   lokl/lokl:php7       "/run.sh"   2 weeks ago    Exited (255) 3 days ago    3466/tcp, 4000-4488/tcp, 4490-5000/tcp, 0.0.0.0:4489->4489/tcp   moonday
+f919e951b48e   hello-world          "/hello"    2 weeks ago    Exited (0) 2 weeks ago                                                                      distracted_wilson
+9a54863ee7a2   lokl/lokl:php7base   "/run.sh"   2 weeks ago    Exited (255) 3 days ago    0.0.0.0:3466->3466/tcp, 4000-5000/tcp                            php7base
+22e43cc41c3b   hello-world          "/hello"    2 weeks ago    Exited (0) 2 weeks ago                                                                      priceless_payne
+82420cd84c17   d005ed73eb8b         "/run.sh"   2 weeks ago    Exited (255) 3 days ago    3466/tcp, 4000-4340/tcp, 4342-5000/tcp, 0.0.0.0:4341->4341/tcp   new7test

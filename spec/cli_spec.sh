@@ -2,7 +2,25 @@
 Describe "cli.sh"
   Include ./cli.sh
 
-  fDescribe "test_core_capabilities()"
+  Describe "get_lokl_container_ids()"
+    It "returns only Lokl container IDs"
+
+			# mock docker ps -a with lokl and non-lokl containers
+      docker(){
+				cat ./spec/test-data/docker-ps-a-output-mixed-001
+      }
+
+      When call get_lokl_container_ids
+      The output should equal "5577ddd81ed7
+6ff99c2ca462
+f089aa00ac98
+7874d8ccd920
+9a54863ee7a2"
+      The status should be success
+    End
+	End
+
+  Describe "test_core_capabilities()"
     It "passes when docker and curl are available"
 
       test_docker_available(){
@@ -236,3 +254,5 @@ Describe "cli.sh"
     End
   End
 End
+
+
