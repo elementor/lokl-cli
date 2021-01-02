@@ -61,7 +61,7 @@ main_menu() {
   echo ""
   read -r main_menu_choice
 
-  if [ "$main_menu_choice" != "${main_menu_choice#[cmq]}" ] ;then
+  if [ "$main_menu_choice" != "${main_menu_choice#[cmq]}" ]; then
     case $main_menu_choice in
       c|C) create_site_choose_name ;;
       m|M) manage_sites_menu ;;
@@ -123,7 +123,7 @@ create_site_choose_name() {
 
   # check name is not empty
   if [ "$LOKL_NAME" = "" ]; then
-    if [ "$LOKL_TEST_MODE" ] ;then
+    if [ "$LOKL_TEST_MODE" ]; then
       lokl_log "Empty or invalid site name entered"
       # early exit when testing for easier assertion
       exit 1 
@@ -153,7 +153,7 @@ create_site_choose_name() {
 
     until curl --output /dev/null --silent --head --fail "http://localhost:$LOKL_PORT"; do
 
-        if [ ${attempt_counter} -eq ${max_attempts} ];then
+        if [ ${attempt_counter} -eq ${max_attempts} ]; then
           echo "Timed out waiting for site to come online..."
           exit 1
         fi
@@ -171,7 +171,7 @@ create_site_choose_name() {
     echo "Press any key to manage sites:"
 
     # return for assertion while testing
-    if [ "$LOKL_TEST_MODE" ] ;then
+    if [ "$LOKL_TEST_MODE" ]; then
       lokl_log "Returning early for assertion under test runner"
       exit 0 
     fi
@@ -237,7 +237,7 @@ manage_sites_menu() {
 }
 
 start_if_stopped() {
-  if [ "$CONTAINER_STATE" != "running" ] ;then
+  if [ "$CONTAINER_STATE" != "running" ]; then
     clear
     echo "$CONTAINER_NAME was stopped, so we're re-launching it"
     echo "before performing your desired action..."
@@ -258,7 +258,7 @@ start_if_stopped() {
 
     # await ready state of webserver after launching
     until curl --output /dev/null --silent --head --fail "http://localhost:$CONTAINER_PORT"; do
-        if [ ${attempt_counter} -eq ${max_attempts} ];then
+        if [ ${attempt_counter} -eq ${max_attempts} ]; then
           echo "Timed out waiting for site to come online..."
           exit 1
         fi
@@ -278,7 +278,7 @@ kill_container() {
 
   read -r confirm_kill_container
 
-  if [ "$confirm_kill_container" != "y" ] ;then
+  if [ "$confirm_kill_container" != "y" ]; then
     manage_single_site
   else
     echo "Stopping $CONTAINER_NAME's server."
@@ -297,7 +297,7 @@ delete_container() {
 
   read -r confirm_delete_container
 
-  if [ "$confirm_delete_container" != "y" ] ;then
+  if [ "$confirm_delete_container" != "y" ]; then
     manage_single_site
   else
     echo "Deleting $CONTAINER_NAME completely."
@@ -329,11 +329,11 @@ manage_single_site() {
   echo "t) take backup of site files and database"
   echo "l) follow server error logs"
 
-  if [ "$CONTAINER_STATE" = "running" ] ;then
+  if [ "$CONTAINER_STATE" = "running" ]; then
     echo "k) kill (force quit) site's server"
   fi
 
-  if [ "$CONTAINER_STATE" != "running" ] ;then
+  if [ "$CONTAINER_STATE" != "running" ]; then
     echo "d) delete server and site completely"
   fi
 
@@ -343,7 +343,7 @@ manage_single_site() {
   echo ""
   read -r site_action_choice
 
-  if [ "$site_action_choice" != "${site_action_choice#[oapstlkdmq]}" ] ;then
+  if [ "$site_action_choice" != "${site_action_choice#[oapstlkdmq]}" ]; then
     case $site_action_choice in
       o|O) open_site_in_browser ;;
       a|A) open_wordpress_admin ;;
@@ -528,7 +528,7 @@ sanitize_site_name() {
 
 # if running tests, export var to use as flag within functions
 # TODO: could put this back in spec_helper, but may annoy shellcheck
-if [ "${__SOURCED__}" ] ;then
+if [ "${__SOURCED__}" ]; then
   lokl_log "### LOKL TEST MODE ENABLED ###"
   export LOKL_TEST_MODE=1
 fi
@@ -541,7 +541,7 @@ LOKL_NAME="$(set_site_name)"
 LOKL_PORT="$(set_site_port)"
 
 # skip menu if minimum required arguments are set
-if [ "${LOKL_NAME}" ] ;then
+if [ "${LOKL_NAME}" ]; then
   lokl_log "Skipping wizard"
   lokl_log "Site Name Argument Passed: $LOKL_NAME"
   lokl_log "Site Port Argument Passed: $LOKL_PORT"
