@@ -26,7 +26,7 @@ Describe "cli.sh"
       The status should be success
     End
 
-    fIt "saves each site's container information to temp cache file"
+    It "saves each site's container information to temp cache file"
 
 			export LOKL_CONTAINERS="6f515f11c638
 7874d8ccd920"
@@ -47,8 +47,11 @@ Describe "cli.sh"
 			# without including these assertions, we get warning
 			The line 1 should equal '1)  mywptestsite'
 			The line 2 should equal '2)  mywptestsite'
-			Path cache-file-1 /tmp/lokl_containers_cache/1
+			# TODO: use test dir vs actual dir, to allow setup/teardown
+			Path cache-file-1=/tmp/lokl_containers_cache/1
+			Path cache-file-2=/tmp/lokl_containers_cache/2
 			The path cache-file-1 should be exist
+			The path cache-file-2 should be exist
       The status should be success
     End
 	End

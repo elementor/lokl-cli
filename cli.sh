@@ -504,8 +504,7 @@ generate_site_list() {
     echo "$SITE_COUNTER)  $CONTAINER_NAME"
 
     # append choices in cache file named for site counter (brittle internal ID) 
-    echo "$CONTAINER_ID,$CONTAINER_NAME,$CONTAINER_PORT,$CONTAINER_STATE" \
-			>> /tmp/lokl_containers_cache/$SITE_COUNTER
+    echo "$CONTAINER_ID,$CONTAINER_NAME,$CONTAINER_PORT,$CONTAINER_STATE" >> /tmp/lokl_containers_cache/$SITE_COUNTER
 
     SITE_COUNTER=$((SITE_COUNTER+1))
   done
@@ -513,16 +512,16 @@ generate_site_list() {
 }
 
 get_container_name_from_id() {
-    echo docker inspect --format='{{.Name}}' "$1" | sed 's|/||'
+    echo "$(docker inspect --format='{{.Name}}' "$1" | sed 's|/||')"
 }
 
 get_container_port_from_id() {
-    echo docker inspect --format='{{.NetworkSettings.Ports}}' "$1" | \
-      sed 's/^[^{]*{\([^{}]*\)}.*/\1/' | awk '{print $2}'
+    echo "$(docker inspect --format='{{.NetworkSettings.Ports}}' "$1" | \
+      sed 's/^[^{]*{\([^{}]*\)}.*/\1/' | awk '{print $2}')"
 }
 
 get_container_state_from_id() {
-    echo docker inspect --format='{{.State.Status}}' "$1"
+    echo "$(docker inspect --format='{{.State.Status}}' "$1")"
 }
 
 sanitize_site_name() {
