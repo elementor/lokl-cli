@@ -206,10 +206,6 @@ manage_sites_menu() {
 
   LOKL_CONTAINERS="$(get_lokl_container_ids)"
 
-  # empty flatfile lokl containers cache
-  rm -Rf /tmp/lokl_containers_cache/*
-  mkdir -p /tmp/lokl_containers_cache/
-
 	generate_site_list
 
   echo ""
@@ -488,6 +484,11 @@ get_lokl_container_ids() {
 }
 
 generate_site_list() {
+  # empty flatfile lokl containers cache
+  rm -Rf /tmp/lokl_containers_cache/*
+  mkdir -p /tmp/lokl_containers_cache/
+
+	# TODO: what to do when no sites?
   SITE_COUNTER=1
 
   # POSIX compliant way to iterate a list
