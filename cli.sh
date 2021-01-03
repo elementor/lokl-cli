@@ -28,15 +28,27 @@ lokl_log() {
 } 
 
 set_docker_tag() {
-  echo "${lokl_php_ver:?php8}"
+	if [ "$lokl_php_ver" ]; then
+		echo "$lokl_php_ver"
+	else
+		echo "php8"
+	fi
 }
 
 set_site_name() {
-  echo "${lokl_site_name:?''}"
+	if [ "$lokl_site_name" ]; then
+		echo "$lokl_site_name"
+	else
+		echo ""
+	fi
 }
 
 set_site_port() {
-  echo "${lokl_site_port:?''}"
+	if [ "$lokl_site_port" ]; then
+		echo "$lokl_site_port"
+	else
+		echo ""
+	fi
 }
 
 main_menu() {
@@ -137,6 +149,7 @@ create_site_choose_name() {
     LOKL_PORT="$(get_random_port)"
 
     lokl_log "Random port number generated: $LOKL_PORT"
+    lokl_log "Using Docker tag: $LOKL_DOCKER_TAG"
 
     docker run -e N="$LOKL_NAME" -e P="$LOKL_PORT" \
       --name="$LOKL_NAME" -p "$LOKL_PORT":"$LOKL_PORT" \
@@ -196,28 +209,8 @@ manage_sites_menu() {
 
   SITE_COUNTER=1
 
-  # POSIX compliant way to iterate a list
-  OLDIFS="$IFS"
-  IFS='
-'
-  for CONTAINER_ID in $LOKL_CONTAINERS
-  do
-    CONTAINER_NAME="$(docker inspect --format='{{.Name}}' "$CONTAINER_ID" | sed 's|/||')"
-    # get container's exposed port
-    CONTAINER_PORT="$(docker inspect --format='{{.NetworkSettings.Ports}}' "$CONTAINER_ID" | \
-      sed 's/^[^{]*{\([^{}]*\)}.*/\1/' | awk '{print $2}')"
-    # get state
-    CONTAINER_STATE="$(docker inspect --format='{{.State.Status}}' "$CONTAINER_ID")"
-
-    # print choices for user
-    echo "$SITE_COUNTER)  $CONTAINER_NAME"
-
-    # append choices in cache file named for site counter (brittle internal ID) 
-    echo "$CONTAINER_ID,$CONTAINER_NAME,$CONTAINER_PORT,$CONTAINER_STATE" >> /tmp/lokl_containers_cache/$SITE_COUNTER
-
-    SITE_COUNTER=$((SITE_COUNTER+1))
-  done
-  IFS="$OLDIFS"
+	# TODO: wip; can $LOKL_CONTAINERS be passed?
+	generate_site_list
 
   echo ""
   echo "Choose the site you want to manage."
@@ -483,6 +476,7 @@ open_phpmyadmin() {
   fi
 }
 
+# TODO: not used yet, needs revisiting
 # get all lokl container ports and find another within 4000-5000 range
 get_available_container_port() {
   echo ""
@@ -517,6 +511,31 @@ get_lokl_container_ids() {
   docker ps -a | awk '{ print $1,$2 }' | grep lokl | awk '{print $1 }'
 }
 
+generate_site_list() {
+  # POSIX compliant way to iterate a list
+  OLDIFS="$IFS"
+  IFS='
+'
+  for CONTAINER_ID in $LOKL_CONTAINERS
+  do
+    CONTAINER_NAME="$(docker inspect --format='{{.Name}}' "$CONTAINER_ID" | sed 's|/||')"
+    # get container's exposed port
+    CONTAINER_PORT="$(docker inspect --format='{{.NetworkSettings.Ports}}' "$CONTAINER_ID" | \
+      sed 's/^[^{]*{\([^{}]*\)}.*/\1/' | awk '{print $2}')"
+    # get state
+    CONTAINER_STATE="$(docker inspect --format='{{.State.Status}}' "$CONTAINER_ID")"
+
+    # print choices for user
+    echo "$SITE_COUNTER)  $CONTAINER_NAME"
+
+    # append choices in cache file named for site counter (brittle internal ID) 
+    echo "$CONTAINER_ID,$CONTAINER_NAME,$CONTAINER_PORT,$CONTAINER_STATE" >> /tmp/lokl_containers_cache/$SITE_COUNTER
+
+    SITE_COUNTER=$((SITE_COUNTER+1))
+  done
+  IFS="$OLDIFS"
+}
+
 sanitize_site_name() {
   USER_SITE_NAME_CHOICE="$1"
 
@@ -541,6 +560,8 @@ ${__SOURCED__:+return}
 LOKL_DOCKER_TAG="$(set_docker_tag)"
 LOKL_NAME="$(set_site_name)"
 LOKL_PORT="$(set_site_port)"
+
+lokl_log "Using Docker tag: $LOKL_DOCKER_TAG"
 
 # skip menu if minimum required arguments are set
 if [ "${LOKL_NAME}" ]; then
