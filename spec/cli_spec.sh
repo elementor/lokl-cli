@@ -2,6 +2,20 @@
 Describe "cli.sh"
   Include ./cli.sh
 
+  Describe "get_container_name_from_id()"
+    fIt "returns container name with leading slash stripped"
+
+			# mock docker inspect
+			docker() {
+				echo '/checktimeouts'
+			}
+
+      When call get_container_name_from_id 'someid'
+      The output should equal 'checktimeouts'
+      The status should be success
+    End
+	End
+
   Describe "set_site_poll_sleep_duration()"
     It "uses 5 seconds in production "
       When call set_site_poll_sleep_duration 0
