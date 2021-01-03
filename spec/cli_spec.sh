@@ -2,6 +2,22 @@
 Describe "cli.sh"
   Include ./cli.sh
 
+  Describe "generate_site_list()"
+    xIt "prints numerically indexed list of site names"
+
+      When call generate_site_list
+      The output should include 'something'
+      The status should be success
+    End
+
+    xIt "saves each site's container information to temp cache file"
+
+      When call generate_site_list
+      # The output should satisfy acceptable_port_number
+      # The status should be success
+    End
+	End
+
   Describe "get_random_port()"
     It "returns random port between 4000 and 5000"
 			# allow shellcheck to think var is defined

@@ -209,7 +209,6 @@ manage_sites_menu() {
 
   SITE_COUNTER=1
 
-	# TODO: wip; can $LOKL_CONTAINERS be passed?
 	generate_site_list
 
   echo ""
@@ -476,35 +475,11 @@ open_phpmyadmin() {
   fi
 }
 
-# TODO: not used yet, needs revisiting
-# get all lokl container ports and find another within 4000-5000 range
-get_available_container_port() {
-  echo ""
-  # get all lokl container IDs
-  LOKL_CONTAINERS="$(docker ps -a | awk '{ print $1,$2 }' | grep lokl | awk '{print $1 }')"
-
-  # POSIX compliant way to iterate a list
-  OLDIFS="$IFS"
-  IFS='
-'
-  for CONTAINER_ID in $LOKL_CONTAINERS
-  do
-    # get container's exposed port
-    CONTAINER_PORT="$(docker inspect --format='{{.NetworkSettings.Ports}}' "$CONTAINER_ID" | \
-      sed 's/^[^{]*{\([^{}]*\)}.*/\1/' | awk '{print $2}')"
-
-    echo "$SITE_COUNTER)  http://localhost:$CONTAINER_PORT"
-
-    SITE_COUNTER=$((SITE_COUNTER+1))
-  done
-  IFS="$OLDIFS"
-
-  echo "Available container port:"
-}
-
 get_random_port() {
     # echo value to stdout to be used in cmd substitution
     awk -v min=4000 -v max=5000 'BEGIN{srand(); print int(min+rand()*(max-min+1))}'
+
+		# TODO: check for unused port to avoid collision
 }
 
 get_lokl_container_ids() {
@@ -518,22 +493,33 @@ generate_site_list() {
 '
   for CONTAINER_ID in $LOKL_CONTAINERS
   do
-    CONTAINER_NAME="$(docker inspect --format='{{.Name}}' "$CONTAINER_ID" | sed 's|/||')"
-    # get container's exposed port
-    CONTAINER_PORT="$(docker inspect --format='{{.NetworkSettings.Ports}}' "$CONTAINER_ID" | \
-      sed 's/^[^{]*{\([^{}]*\)}.*/\1/' | awk '{print $2}')"
-    # get state
-    CONTAINER_STATE="$(docker inspect --format='{{.State.Status}}' "$CONTAINER_ID")"
+    CONTAINER_NAME="$(get_container_name_from_id "$CONTAINER_ID")"
+    CONTAINER_PORT="$(get_container_port_from_id "$CONTAINER_ID")"
+    CONTAINER_STATE="$(get_container_state_from_id "$CONTAINER_ID")"
 
     # print choices for user
     echo "$SITE_COUNTER)  $CONTAINER_NAME"
 
     # append choices in cache file named for site counter (brittle internal ID) 
-    echo "$CONTAINER_ID,$CONTAINER_NAME,$CONTAINER_PORT,$CONTAINER_STATE" >> /tmp/lokl_containers_cache/$SITE_COUNTER
+    echo "$CONTAINER_ID,$CONTAINER_NAME,$CONTAINER_PORT,$CONTAINER_STATE" \
+			>> /tmp/lokl_containers_cache/$SITE_COUNTER
 
     SITE_COUNTER=$((SITE_COUNTER+1))
   done
   IFS="$OLDIFS"
+}
+
+get_container_name_from_id() {
+    echo docker inspect --format='{{.Name}}' "$1" | sed 's|/||'
+}
+
+get_container_port_from_id() {
+    echo docker inspect --format='{{.NetworkSettings.Ports}}' "$1" | \
+      sed 's/^[^{]*{\([^{}]*\)}.*/\1/' | awk '{print $2}'
+}
+
+get_container_state_from_id() {
+    echo docker inspect --format='{{.State.Status}}' "$1"
 }
 
 sanitize_site_name() {
