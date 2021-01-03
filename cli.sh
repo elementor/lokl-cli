@@ -28,6 +28,7 @@ lokl_log() {
 } 
 
 set_docker_tag() {
+	# shellcheck disable=SC2154
 	if [ "$lokl_php_ver" ]; then
 		echo "$lokl_php_ver"
 	else
@@ -36,6 +37,7 @@ set_docker_tag() {
 }
 
 set_site_name() {
+	# shellcheck disable=SC2154
 	if [ "$lokl_site_name" ]; then
 		echo "$lokl_site_name"
 	else
@@ -44,6 +46,7 @@ set_site_name() {
 }
 
 set_site_port() {
+	# shellcheck disable=SC2154
 	if [ "$lokl_site_port" ]; then
 		echo "$lokl_site_port"
 	else
@@ -206,8 +209,6 @@ manage_sites_menu() {
   # empty flatfile lokl containers cache
   rm -Rf /tmp/lokl_containers_cache/*
   mkdir -p /tmp/lokl_containers_cache/
-
-  SITE_COUNTER=1
 
 	generate_site_list
 
@@ -487,6 +488,8 @@ get_lokl_container_ids() {
 }
 
 generate_site_list() {
+  SITE_COUNTER=1
+
   # POSIX compliant way to iterate a list
   OLDIFS="$IFS"
   IFS='

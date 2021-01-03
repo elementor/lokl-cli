@@ -3,10 +3,27 @@ Describe "cli.sh"
   Include ./cli.sh
 
   Describe "generate_site_list()"
-    xIt "prints numerically indexed list of site names"
+    It "prints numerically indexed list of site names"
+
+			export LOKL_CONTAINERS="6f515f11c638
+7874d8ccd920"
+
+			get_container_name_from_id() {
+				echo 'mywptestsite'
+			}
+
+			get_container_port_from_id() {
+				echo '4455'
+			}
+
+			get_container_state_from_id() {
+				echo 'running'
+			}
 
       When call generate_site_list
-      The output should include 'something'
+      The output should equal \
+'1)  mywptestsite
+2)  mywptestsite'
       The status should be success
     End
 
@@ -20,9 +37,7 @@ Describe "cli.sh"
 
   Describe "get_random_port()"
     It "returns random port between 4000 and 5000"
-			# allow shellcheck to think var is defined
-			acceptable_port_number=
-
+			# shellcheck disable=SC2154
 			acceptable_port_number() {
 				[ "$acceptable_port_number" -ge 3999 ] && [ "$acceptable_port_number" -le 5001 ]	
 			}
