@@ -512,16 +512,16 @@ generate_site_list() {
 }
 
 get_container_name_from_id() {
-    echo "$(docker inspect --format='{{.Name}}' "$1" | sed 's|/||')"
+    docker inspect --format='{{.Name}}' "$1" | sed 's|/||'
 }
 
 get_container_port_from_id() {
-    echo "$(docker inspect --format='{{.NetworkSettings.Ports}}' "$1" | \
-      sed 's/^[^{]*{\([^{}]*\)}.*/\1/' | awk '{print $2}')"
+    docker inspect --format='{{.NetworkSettings.Ports}}' "$1" | \
+      sed 's/^[^{]*{\([^{}]*\)}.*/\1/' | awk '{print $2}'
 }
 
 get_container_state_from_id() {
-    echo "$(docker inspect --format='{{.State.Status}}' "$1")"
+    docker inspect --format='{{.State.Status}}' "$1"
 }
 
 sanitize_site_name() {
