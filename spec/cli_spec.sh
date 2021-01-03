@@ -2,10 +2,38 @@
 Describe "cli.sh"
   Include ./cli.sh
 
+  Describe "get_container_state_from_id()"
+    It "returns container port"
+
+			# mock docker inspect --format='{{.State.Status}}'
+			docker() {
+				echo 'running'
+			}
+
+      When call get_container_state_from_id 'someid'
+      The output should equal 'running'
+      The status should be success
+    End
+	End
+
+  Describe "get_container_port_from_id()"
+    It "returns container port"
+
+			# mock docker inspect --format='{{.NetworkSettings.Ports}}'
+			docker() {
+				cat ./spec/test-data/docker-inspect-port-mapping-0-0-0-0-4363
+			}
+
+      When call get_container_port_from_id 'someid'
+      The output should equal '4363'
+      The status should be success
+    End
+	End
+
   Describe "get_container_name_from_id()"
     It "returns container name with leading slash stripped"
 
-			# mock docker inspect
+			# mock docker inspect --format='{{.Name}}'
 			docker() {
 				echo '/checktimeouts'
 			}
