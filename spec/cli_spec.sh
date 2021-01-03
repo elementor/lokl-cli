@@ -3,7 +3,7 @@ Describe "cli.sh"
   Include ./cli.sh
 
   Describe "get_container_name_from_id()"
-    fIt "returns container name with leading slash stripped"
+    It "returns container name with leading slash stripped"
 
 			# mock docker inspect
 			docker() {
