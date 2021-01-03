@@ -315,6 +315,34 @@ f089aa00ac98
       The stdout should include 'Choose a name for your new Lokl WordPress sit'
       The status should be failure
     End
+
+    It "exits if site doesn't come online after 60 seconds"
+      test_core_capabilities() {
+        clear
+        echo ""
+        echo "Checking system requirements... "
+        echo ""
+      }
+
+      docker() {
+        echo "mocking launching container...."
+      }
+
+      curl() {
+        echo "mocking unsuccessful curl to container..."
+				return 1
+				
+      }
+
+      get_random_port() {
+        echo "4070"
+      }
+
+      Data "mywptestsitename"
+      When run create_site_choose_name
+      The stdout should include 'Timed out waiting for site to come online..'
+      The status should be failure
+    End
   End
 End
 
