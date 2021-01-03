@@ -21,17 +21,35 @@ Describe "cli.sh"
 			}
 
       When call generate_site_list
-      The output should equal \
-'1)  mywptestsite
-2)  mywptestsite'
+			The line 1 should equal '1)  mywptestsite'
+			The line 2 should equal '2)  mywptestsite'
       The status should be success
     End
 
-    xIt "saves each site's container information to temp cache file"
+    fIt "saves each site's container information to temp cache file"
+
+			export LOKL_CONTAINERS="6f515f11c638
+7874d8ccd920"
+
+			get_container_name_from_id() {
+				echo 'mywptestsite'
+			}
+
+			get_container_port_from_id() {
+				echo '4455'
+			}
+
+			get_container_state_from_id() {
+				echo 'running'
+			}
 
       When call generate_site_list
-      # The output should satisfy acceptable_port_number
-      # The status should be success
+			# without including these assertions, we get warning
+			The line 1 should equal '1)  mywptestsite'
+			The line 2 should equal '2)  mywptestsite'
+			Path cache-file-1 /tmp/lokl_containers_cache/1
+			The path cache-file-1 should be exist
+      The status should be success
     End
 	End
 
