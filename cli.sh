@@ -54,6 +54,22 @@ set_site_port() {
 	fi
 }
 
+set_curl_timeout_max_attempts() {
+	if [ "$LOKL_TEST_MODE" ]; then
+		echo 2
+	else
+		echo 12
+	fi
+}
+
+set_site_poll_sleep_duration() {
+	if [ "$LOKL_TEST_MODE" ]; then
+		echo 0.1
+	else
+		echo 5
+	fi
+}
+
 main_menu() {
   clear
   echo ""
@@ -165,18 +181,21 @@ create_site_choose_name() {
 
     # poll until site accessible, print progresss
     attempt_counter=0
-    max_attempts=12
+    max_attempts="$(set_curl_timeout_max_attempts)"
+    site_poll_sleep_duration="$(set_site_poll_sleep_duration)"
+
+    lokl_log "Waiting for: $max_attempts curl timeout attempts" 
 
     until curl --output /dev/null --silent --head --fail "http://localhost:$LOKL_PORT"; do
 
-        if [ ${attempt_counter} -eq ${max_attempts} ]; then
+        if [ ${attempt_counter} -eq "${max_attempts}" ]; then
           echo "Timed out waiting for site to come online..."
           exit 1
         fi
 
         printf '.'
         attempt_counter=$((attempt_counter+1))
-        sleep 5
+        sleep "$site_poll_sleep_duration"
     done
 
     clear

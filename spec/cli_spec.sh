@@ -316,7 +316,7 @@ f089aa00ac98
       The status should be failure
     End
 
-    It "exits if site doesn't come online after 60 seconds"
+    It "exits if site doesn't come online after max polling duration"
       test_core_capabilities() {
         clear
         echo ""
@@ -340,6 +340,7 @@ f089aa00ac98
 
       Data "mywptestsitename"
       When run create_site_choose_name
+			The lines of stdout should equal 21
       The stdout should include 'Timed out waiting for site to come online..'
       The status should be failure
     End
