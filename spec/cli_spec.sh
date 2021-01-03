@@ -2,6 +2,34 @@
 Describe "cli.sh"
   Include ./cli.sh
 
+  Describe "set_site_poll_sleep_duration()"
+    It "uses 5 seconds in production "
+      When call set_site_poll_sleep_duration 0
+      The output should equal '5'
+      The status should be success
+    End
+
+    It "uses 0.1 seconds under test "
+      When call set_site_poll_sleep_duration 1
+      The output should equal '0.1'
+      The status should be success
+    End
+	End
+
+  Describe "set_curl_timeout_max_attempts()"
+    It "tries 12 times in production "
+      When call set_curl_timeout_max_attempts 0
+      The output should equal '12'
+      The status should be success
+    End
+
+    It "tries twice under test "
+      When call set_curl_timeout_max_attempts 1
+      The output should equal '2'
+      The status should be success
+    End
+	End
+
   Describe "generate_site_list()"
     It "prints numerically indexed list of site names"
 

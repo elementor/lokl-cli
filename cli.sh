@@ -55,7 +55,7 @@ set_site_port() {
 }
 
 set_curl_timeout_max_attempts() {
-	if [ "$LOKL_TEST_MODE" ]; then
+	if [ "$1" -eq 1 ]; then
 		echo 2
 	else
 		echo 12
@@ -63,7 +63,7 @@ set_curl_timeout_max_attempts() {
 }
 
 set_site_poll_sleep_duration() {
-	if [ "$LOKL_TEST_MODE" ]; then
+	if [ "$1" -eq 1 ]; then
 		echo 0.1
 	else
 		echo 5
@@ -181,8 +181,8 @@ create_site_choose_name() {
 
     # poll until site accessible, print progresss
     attempt_counter=0
-    max_attempts="$(set_curl_timeout_max_attempts)"
-    site_poll_sleep_duration="$(set_site_poll_sleep_duration)"
+    max_attempts="$(set_curl_timeout_max_attempts "$LOKL_TEST_MODE")"
+    site_poll_sleep_duration="$(set_site_poll_sleep_duration "$LOKL_TEST_MODE")"
 
     lokl_log "Waiting for: $max_attempts curl timeout attempts" 
 
