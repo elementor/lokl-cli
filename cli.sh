@@ -24,7 +24,8 @@
 #     sh cli.sh
 
 lokl_log() {
-  echo "$(date '+%H:%M:%S'): $1" >> /tmp/lokldebuglog
+	timestamp="$(date '+%H:%M:%S')"
+  echo "$timestamp: $1" >> /tmp/lokldebuglog
 } 
 
 set_docker_tag() {

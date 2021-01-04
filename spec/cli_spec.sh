@@ -2,6 +2,24 @@
 Describe "cli.sh"
   Include ./cli.sh
 
+  Describe "lokl_log()"
+    It "prints message to log file"
+
+			# mock date '+%H:%M:%S'
+			date() {
+				echo '22:33:44'
+			}
+
+			# clear log before test
+			echo '' > /tmp/lokldebuglog
+
+      When call lokl_log 'My log message'
+      The contents of file "/tmp/lokldebuglog" should equal "
+22:33:44: My log message"
+      The status should be success
+    End
+	End
+
   Describe "get_container_state_from_id()"
     It "returns container port"
 
