@@ -248,6 +248,28 @@ f089aa00ac98
       The stdout should include 'Lokl launcher & management script'
       The status should be success
     End
+
+    It "launches create_site_choose_name when c is given"
+      create_site_choose_name() {
+        echo "create_site_choose_name() called"
+      }
+
+      Data "c"
+      When run main_menu
+      The stdout should include 'create_site_choose_name() called'
+      The status should be success
+    End
+
+    It "launches manage_sites_menu when c is given"
+      manage_sites_menu() {
+        echo "manage_sites_menu() called"
+      }
+
+      Data "m"
+      When run main_menu
+      The stdout should include 'manage_sites_menu() called'
+      The status should be success
+    End
   End
 
   Describe "set_site_port()"
