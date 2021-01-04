@@ -2,65 +2,73 @@
 Describe "cli.sh"
   Include ./cli.sh
 
+  xIt "exits when under test"
+
+  End
+
+  xIt "skips wizard and "
+
+  End
+
   Describe "lokl_log()"
     It "prints message to log file"
 
-			# mock date '+%H:%M:%S'
-			date() {
-				echo '22:33:44'
-			}
+      # mock date '+%H:%M:%S'
+      date() {
+        echo '22:33:44'
+      }
 
-			# clear log before test
-			echo '' > /tmp/lokldebuglog
+      # clear log before test
+      echo '' > /tmp/lokldebuglog
 
       When call lokl_log 'My log message'
       The contents of file "/tmp/lokldebuglog" should equal "
 22:33:44: My log message"
       The status should be success
     End
-	End
+  End
 
   Describe "get_container_state_from_id()"
     It "returns container port"
 
-			# mock docker inspect --format='{{.State.Status}}'
-			docker() {
-				echo 'running'
-			}
+      # mock docker inspect --format='{{.State.Status}}'
+      docker() {
+        echo 'running'
+      }
 
       When call get_container_state_from_id 'someid'
       The output should equal 'running'
       The status should be success
     End
-	End
+  End
 
   Describe "get_container_port_from_id()"
     It "returns container port"
 
-			# mock docker inspect --format='{{.NetworkSettings.Ports}}'
-			docker() {
-				cat ./spec/test-data/docker-inspect-port-mapping-0-0-0-0-4363
-			}
+      # mock docker inspect --format='{{.NetworkSettings.Ports}}'
+      docker() {
+        cat ./spec/test-data/docker-inspect-port-mapping-0-0-0-0-4363
+      }
 
       When call get_container_port_from_id 'someid'
       The output should equal '4363'
       The status should be success
     End
-	End
+  End
 
   Describe "get_container_name_from_id()"
     It "returns container name with leading slash stripped"
 
-			# mock docker inspect --format='{{.Name}}'
-			docker() {
-				echo '/checktimeouts'
-			}
+      # mock docker inspect --format='{{.Name}}'
+      docker() {
+        echo '/checktimeouts'
+      }
 
       When call get_container_name_from_id 'someid'
       The output should equal 'checktimeouts'
       The status should be success
     End
-	End
+  End
 
   Describe "set_site_poll_sleep_duration()"
     It "uses 5 seconds in production "
@@ -74,7 +82,7 @@ Describe "cli.sh"
       The output should equal '0.1'
       The status should be success
     End
-	End
+  End
 
   Describe "set_curl_timeout_max_attempts()"
     It "tries 12 times in production "
@@ -88,81 +96,81 @@ Describe "cli.sh"
       The output should equal '2'
       The status should be success
     End
-	End
+  End
 
   Describe "generate_site_list()"
     It "prints numerically indexed list of site names"
 
-			export LOKL_CONTAINERS="6f515f11c638
+      export LOKL_CONTAINERS="6f515f11c638
 7874d8ccd920"
 
-			get_container_name_from_id() {
-				echo 'mywptestsite'
-			}
+      get_container_name_from_id() {
+        echo 'mywptestsite'
+      }
 
-			get_container_port_from_id() {
-				echo '4455'
-			}
+      get_container_port_from_id() {
+        echo '4455'
+      }
 
-			get_container_state_from_id() {
-				echo 'running'
-			}
+      get_container_state_from_id() {
+        echo 'running'
+      }
 
       When call generate_site_list
-			The line 1 should equal '1)  mywptestsite'
-			The line 2 should equal '2)  mywptestsite'
+      The line 1 should equal '1)  mywptestsite'
+      The line 2 should equal '2)  mywptestsite'
       The status should be success
     End
 
     It "saves each site's container information to temp cache file"
 
-			export LOKL_CONTAINERS="6f515f11c638
+      export LOKL_CONTAINERS="6f515f11c638
 7874d8ccd920"
 
-			get_container_name_from_id() {
-				echo 'mywptestsite'
-			}
+      get_container_name_from_id() {
+        echo 'mywptestsite'
+      }
 
-			get_container_port_from_id() {
-				echo '4455'
-			}
+      get_container_port_from_id() {
+        echo '4455'
+      }
 
-			get_container_state_from_id() {
-				echo 'running'
-			}
+      get_container_state_from_id() {
+        echo 'running'
+      }
 
       When call generate_site_list
-			# without including these assertions, we get warning
-			The line 1 should equal '1)  mywptestsite'
-			The line 2 should equal '2)  mywptestsite'
-			# TODO: isolate from real Lokl sites on test machine
-			Path cache-file-1=/tmp/lokl_containers_cache/1
-			Path cache-file-2=/tmp/lokl_containers_cache/2
-			The path cache-file-1 should be exist
-			The path cache-file-2 should be exist
+      # without including these assertions, we get warning
+      The line 1 should equal '1)  mywptestsite'
+      The line 2 should equal '2)  mywptestsite'
+      # TODO: isolate from real Lokl sites on test machine
+      Path cache-file-1=/tmp/lokl_containers_cache/1
+      Path cache-file-2=/tmp/lokl_containers_cache/2
+      The path cache-file-1 should be exist
+      The path cache-file-2 should be exist
       The status should be success
     End
-	End
+  End
 
   Describe "get_random_port()"
     It "returns random port between 4000 and 5000"
-			# shellcheck disable=SC2154
-			acceptable_port_number() {
-				[ "$acceptable_port_number" -ge 3999 ] && [ "$acceptable_port_number" -le 5001 ]	
-			}
+      # shellcheck disable=SC2154
+      acceptable_port_number() {
+        [ "$acceptable_port_number" -ge 3999 ] && [ "$acceptable_port_number" -le 5001 ]  
+      }
 
       When call get_random_port
       The output should satisfy acceptable_port_number
       The status should be success
     End
-	End
+  End
 
   Describe "get_lokl_container_ids()"
     It "returns only Lokl container IDs"
 
-			# mock docker ps -a with lokl and non-lokl containers
+      # mock docker ps -a with lokl and non-lokl containers
       docker(){
-				cat ./spec/test-data/docker-ps-a-output-mixed-001
+        cat ./spec/test-data/docker-ps-a-output-mixed-001
       }
 
       When call get_lokl_container_ids
@@ -173,7 +181,7 @@ f089aa00ac98
 9a54863ee7a2"
       The status should be success
     End
-	End
+  End
 
   Describe "test_core_capabilities()"
     It "passes when docker and curl are available"
@@ -418,8 +426,8 @@ f089aa00ac98
 
       curl() {
         echo "mocking unsuccessful curl to container..."
-				return 1
-				
+        return 1
+        
       }
 
       get_random_port() {
@@ -428,7 +436,7 @@ f089aa00ac98
 
       Data "mywptestsitename"
       When run create_site_choose_name
-			The lines of stdout should equal 21
+      The lines of stdout should equal 21
       The stdout should include 'Timed out waiting for site to come online..'
       The status should be failure
     End

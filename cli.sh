@@ -24,51 +24,51 @@
 #     sh cli.sh
 
 lokl_log() {
-	timestamp="$(date '+%H:%M:%S')"
+  timestamp="$(date '+%H:%M:%S')"
   echo "$timestamp: $1" >> /tmp/lokldebuglog
 } 
 
 set_docker_tag() {
-	# shellcheck disable=SC2154
-	if [ "$lokl_php_ver" ]; then
-		echo "$lokl_php_ver"
-	else
-		echo "php8"
-	fi
+  # shellcheck disable=SC2154
+  if [ "$lokl_php_ver" ]; then
+    echo "$lokl_php_ver"
+  else
+    echo "php8"
+  fi
 }
 
 set_site_name() {
-	# shellcheck disable=SC2154
-	if [ "$lokl_site_name" ]; then
-		echo "$lokl_site_name"
-	else
-		echo ""
-	fi
+  # shellcheck disable=SC2154
+  if [ "$lokl_site_name" ]; then
+    echo "$lokl_site_name"
+  else
+    echo ""
+  fi
 }
 
 set_site_port() {
-	# shellcheck disable=SC2154
-	if [ "$lokl_site_port" ]; then
-		echo "$lokl_site_port"
-	else
-		echo ""
-	fi
+  # shellcheck disable=SC2154
+  if [ "$lokl_site_port" ]; then
+    echo "$lokl_site_port"
+  else
+    echo ""
+  fi
 }
 
 set_curl_timeout_max_attempts() {
-	if [ "$1" -eq 1 ]; then
-		echo 2
-	else
-		echo 12
-	fi
+  if [ "$1" -eq 1 ]; then
+    echo 2
+  else
+    echo 12
+  fi
 }
 
 set_site_poll_sleep_duration() {
-	if [ "$1" -eq 1 ]; then
-		echo 0.1
-	else
-		echo 5
-	fi
+  if [ "$1" -eq 1 ]; then
+    echo 0.1
+  else
+    echo 5
+  fi
 }
 
 main_menu() {
@@ -226,7 +226,7 @@ manage_sites_menu() {
 
   LOKL_CONTAINERS="$(get_lokl_container_ids)"
 
-	generate_site_list
+  generate_site_list
 
   echo ""
   echo "Choose the site you want to manage."
@@ -496,7 +496,7 @@ get_random_port() {
     # echo value to stdout to be used in cmd substitution
     awk -v min=4000 -v max=5000 'BEGIN{srand(); print int(min+rand()*(max-min+1))}'
 
-		# TODO: check for unused port to avoid collision
+    # TODO: check for unused port to avoid collision
 }
 
 get_lokl_container_ids() {
@@ -508,7 +508,7 @@ generate_site_list() {
   rm -Rf /tmp/lokl_containers_cache/*
   mkdir -p /tmp/lokl_containers_cache/
 
-	# TODO: what to do when no sites?
+  # TODO: what to do when no sites?
   SITE_COUNTER=1
 
   # POSIX compliant way to iterate a list
