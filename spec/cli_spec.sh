@@ -368,17 +368,21 @@ f089aa00ac98
   End
 
   Describe "create_site_choose_php_version()"
-    fIt "sets docker image tag to php8 when 8 chosen"
+    It "sets docker image tag to php8 when 8 chosen"
       Data "8"
-      When run create_site_choose_php_version
+      When call create_site_choose_php_version
       The variable LOKL_DOCKER_TAG should equal 'php8'
+      The output should include \
+        'Choose the PHP version for your  new Lokl WordPress site'
       The status should be success
     End
 
-    xIt "sets docker image tag to php7 when 7 chosen"
-      Data "8"
-      When run create_site_choose_php_version
+    It "sets docker image tag to php7 when 7 chosen"
+      Data "7"
+      When call create_site_choose_php_version
       The variable LOKL_DOCKER_TAG should equal 'php7'
+      The output should include \
+        'Choose the PHP version for your  new Lokl WordPress site'
       The status should be success
     End
   End

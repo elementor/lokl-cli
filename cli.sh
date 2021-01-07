@@ -131,6 +131,38 @@ test_docker_available() {
   fi
 }
 
+create_site_choose_php_version() {
+  clear
+  echo ""
+  echo "Choose the PHP version for your  new Lokl WordPress site. "
+  echo ""
+  echo ""
+  echo "8) PHP 8.0 (recommended)"
+  echo "7) PHP 7.4"
+  echo ""
+  echo ""
+  echo "Type 8 or 7, then the Enter key: "
+  echo ""
+
+  read -r create_site_php_choice
+
+  lokl_log "User input desired php version: $create_site_php_choice"
+
+  if [ $create_site_php_choice -eq 8 ]; then
+    LOKL_DOCKER_TAG="php8"
+  elif [ $create_site_php_choice -eq 7 ]; then
+    LOKL_DOCKER_TAG="php7"
+  else
+    create_site_choose_php_version
+  fi
+
+  create_wordpress_docker_container
+}
+
+create_wordpress_docker_container() {
+  echo "not implemented yet, cut from create_site_choose_name()"
+}
+
 create_site_choose_name() {
   test_core_capabilities
   clear
