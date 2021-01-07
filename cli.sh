@@ -10,7 +10,7 @@
 #
 #     run from internet:
 #
-#     $   \sh -c "$(curl -sSl 'https://lokl.dev/go?v=4')"
+#     $   sh -c "$(curl -sSl 'https://lokl.dev/go?v=4')"
 #
 #     run locally:
 #
@@ -19,9 +19,9 @@
 #     to skip the wizard, call the script with vars set:
 #
 #     lokl_php_ver=php8 \ 
-#     lokl_site_name=bananapants \
-#     lokl_site_port=4444 \
-#     sh cli.sh
+#       lokl_site_name=bananapants \
+#       lokl_site_port=4444 \
+#       sh cli.sh
 
 lokl_log() {
   timestamp="$(date '+%H:%M:%S')"

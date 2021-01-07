@@ -367,6 +367,22 @@ f089aa00ac98
     End
   End
 
+  Describe "create_site_choose_php_version()"
+    fIt "sets docker image tag to php8 when 8 chosen"
+      Data "8"
+      When run create_site_choose_php_version
+      The variable LOKL_DOCKER_TAG should equal 'php8'
+      The status should be success
+    End
+
+    xIt "sets docker image tag to php7 when 7 chosen"
+      Data "8"
+      When run create_site_choose_php_version
+      The variable LOKL_DOCKER_TAG should equal 'php7'
+      The status should be success
+    End
+  End
+
   Describe "create_site_choose_name()"
     It "launches container with name and random port when proper name is given"
      # mock test_core_capabilities as not core to this test 
