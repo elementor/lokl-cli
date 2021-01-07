@@ -159,11 +159,10 @@ create_site_choose_php_version() {
   create_wordpress_docker_container
 }
 
-create_wordpress_docker_container() {
-  echo "not implemented yet, cut from create_site_choose_name()"
-}
-
 create_site_choose_name() {
+  # purposely put this after main_menu() to allow users to see what the wizard
+  # is like before reporting any detected inabilities to create a site, which
+  # also requires a little delay. ie, UX over logical function flow
   test_core_capabilities
   clear
   echo ""
@@ -195,61 +194,66 @@ create_site_choose_name() {
 
     # re-ask for name entry if input was invalid
     create_site_choose_name
-  else
-    lokl_log "User input site name: $LOKL_NAME"
-
-    LOKL_PORT="$(get_random_port)"
-
-    lokl_log "Random port number generated: $LOKL_PORT"
-    lokl_log "Using Docker tag: $LOKL_DOCKER_TAG"
-
-    docker run -e N="$LOKL_NAME" -e P="$LOKL_PORT" \
-      --name="$LOKL_NAME" -p "$LOKL_PORT":"$LOKL_PORT" \
-      -d lokl/lokl:"$LOKL_DOCKER_TAG"
-
-    clear
-    echo "Launching your new Lokl WordPress site!"
-    echo ""
-    echo "Waiting for $LOKL_NAME to be ready"
-
-    # poll until site accessible, print progresss
-    attempt_counter=0
-    max_attempts="$(set_curl_timeout_max_attempts "$LOKL_TEST_MODE")"
-    site_poll_sleep_duration="$(set_site_poll_sleep_duration "$LOKL_TEST_MODE")"
-
-    lokl_log "Waiting for: $max_attempts curl timeout attempts" 
-
-    until curl --output /dev/null --silent --head --fail "http://localhost:$LOKL_PORT"; do
-
-        if [ ${attempt_counter} -eq "${max_attempts}" ]; then
-          echo "Timed out waiting for site to come online..."
-          exit 1
-        fi
-
-        printf '.'
-        attempt_counter=$((attempt_counter+1))
-        sleep "$site_poll_sleep_duration"
-    done
-
-    clear
-    echo "Your new Lokl WordPress site, $LOKL_NAME, is ready at:"
-    echo ""
-    echo "http://localhost:$LOKL_PORT"
-    echo ""
-    echo "Press any key to manage sites:"
-
-    # return for assertion while testing
-    if [ "$LOKL_TEST_MODE" ]; then
-      lokl_log "Returning early for assertion under test runner"
-      exit 0 
-    fi
-
-    read -r ""
-    manage_sites_menu
   fi
+
+  lokl_log "User input site name: $LOKL_NAME"
+}
+
+create_wordpress_docker_container() {
+  LOKL_PORT="$(get_random_port)"
+
+  lokl_log "Random port number generated: $LOKL_PORT"
+  lokl_log "Using Docker tag: $LOKL_DOCKER_TAG"
+
+  docker run -e N="$LOKL_NAME" -e P="$LOKL_PORT" \
+    --name="$LOKL_NAME" -p "$LOKL_PORT":"$LOKL_PORT" \
+    -d lokl/lokl:"$LOKL_DOCKER_TAG"
+
+  clear
+  echo "Launching your new Lokl WordPress site!"
+  echo ""
+  echo "Waiting for $LOKL_NAME to be ready"
+
+  # poll until site accessible, print progresss
+  attempt_counter=0
+  max_attempts="$(set_curl_timeout_max_attempts "$LOKL_TEST_MODE")"
+  site_poll_sleep_duration="$(set_site_poll_sleep_duration "$LOKL_TEST_MODE")"
+
+  lokl_log "Waiting for: $max_attempts curl timeout attempts" 
+
+  until curl --output /dev/null --silent --head --fail "http://localhost:$LOKL_PORT"; do
+
+      if [ ${attempt_counter} -eq "${max_attempts}" ]; then
+        echo "Timed out waiting for site to come online..."
+        exit 1
+      fi
+
+      printf '.'
+      attempt_counter=$((attempt_counter+1))
+      sleep "$site_poll_sleep_duration"
+  done
+
+  clear
+  echo "Your new Lokl WordPress site, $LOKL_NAME, is ready at:"
+  echo ""
+  echo "http://localhost:$LOKL_PORT"
+  echo ""
+  echo "Press any key to manage sites:"
+
+  # return for assertion while testing
+  if [ "$LOKL_TEST_MODE" ]; then
+    lokl_log "Returning early for assertion under test runner"
+    exit 0 
+  fi
+
+  read -r ""
+  manage_sites_menu
 }
 
 manage_sites_menu() {
+  # purposely put this after main_menu() to allow users to see what the wizard
+  # is like before reporting any detected inabilities to create a site, which
+  # also requires a little delay. ie, UX over logical function flow
   test_core_capabilities
   clear
   echo ""
