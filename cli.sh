@@ -197,6 +197,8 @@ create_site_choose_name() {
   fi
 
   lokl_log "User input site name: $LOKL_NAME"
+
+  create_site_choose_php_version
 }
 
 create_wordpress_docker_container() {

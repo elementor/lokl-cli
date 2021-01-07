@@ -388,6 +388,39 @@ f089aa00ac98
   End
 
   Describe "create_site_choose_name()"
+    It "sets LOKL_NAME to site name when proper name is given"
+      # mock test_core_capabilities as not core to this test 
+      test_core_capabilities() {
+        return 0
+      }
+
+      create_site_choose_php_version() {
+        echo "create_site_choose_php_version() called"
+        return 0
+      }
+
+      Data "mywptestsitename"
+      When call create_site_choose_name
+      The variable LOKL_NAME should equal 'mywptestsitename'
+      The stdout should include \
+        'create_site_choose_php_version() called'
+      The status should be success
+    End
+
+    It "prompts for site name again if input invalid"
+      test_core_capabilities() {
+        return 0
+      }
+
+      Data ""
+      When run create_site_choose_name
+      The variable LOKL_NAME should be undefined
+      The stdout should include 'Choose a name for your new Lokl WordPress site'
+      The status should be failure
+    End
+  End
+
+  xDescribe "create_wordpress_docker_container()"
     It "launches container with name and random port when proper name is given"
      # mock test_core_capabilities as not core to this test 
       test_core_capabilities() {
