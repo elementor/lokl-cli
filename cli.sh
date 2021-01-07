@@ -148,9 +148,9 @@ create_site_choose_php_version() {
 
   lokl_log "User input desired php version: $create_site_php_choice"
 
-  if [ $create_site_php_choice -eq 8 ]; then
+  if [ "$create_site_php_choice" -eq 8 ]; then
     LOKL_DOCKER_TAG="php8"
-  elif [ $create_site_php_choice -eq 7 ]; then
+  elif [ "$create_site_php_choice" -eq 7 ]; then
     LOKL_DOCKER_TAG="php7"
   else
     create_site_choose_php_version
