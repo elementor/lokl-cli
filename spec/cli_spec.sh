@@ -368,12 +368,17 @@ f089aa00ac98
   End
 
   Describe "create_site_choose_php_version()"
+    create_wordpress_docker_container() {
+      echo "create_wordpress_docker_container() called"
+      return 0
+    }
+
     It "sets docker image tag to php8 when 8 chosen"
       Data "8"
       When call create_site_choose_php_version
       The variable LOKL_DOCKER_TAG should equal 'php8'
       The output should include \
-        'Choose the PHP version for your  new Lokl WordPress site'
+        'create_wordpress_docker_container() called'
       The status should be success
     End
 
@@ -382,7 +387,7 @@ f089aa00ac98
       When call create_site_choose_php_version
       The variable LOKL_DOCKER_TAG should equal 'php7'
       The output should include \
-        'Choose the PHP version for your  new Lokl WordPress site'
+        'create_wordpress_docker_container() called'
       The status should be success
     End
   End
