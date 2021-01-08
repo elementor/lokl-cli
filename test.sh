@@ -1,11 +1,6 @@
 #!/bin/sh
 #
-# lokl-go: shell script checker
-#
-# Tests that all shell scripts in lokl-go are POSIX-compliant and error-free
-#
-# This doesn't guarantee perfect functionality on every system, but ensures
-# the scripts themselves are free of common errors.
+# lokl-cli: shell script checker
 #
 # License: The Unlicense, https://unlicense.org
 #
@@ -14,8 +9,9 @@
 #     $   sh tests.sh
 #
 
-# run shellcheck against all files in project, excluding .git dir
+# run ShellCheck to catch syntactical errors and promote best practice
 find . -type f -not -path '*/\.git/*' -name '*.sh' \
   -exec shellcheck {} \;
 
+# run ShellSpec unit/integration tests and generate coverage report
 shellspec --kcov
