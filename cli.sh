@@ -214,26 +214,8 @@ create_wordpress_docker_container() {
   clear
   echo "Launching your new Lokl WordPress site!"
   echo ""
-  echo "Waiting for $LOKL_NAME to be ready"
 
-  # poll until site accessible, print progresss
-  attempt_counter=0
-  max_attempts="$(set_curl_timeout_max_attempts "$LOKL_TEST_MODE")"
-  site_poll_sleep_duration="$(set_site_poll_sleep_duration "$LOKL_TEST_MODE")"
-
-  lokl_log "Waiting for: $max_attempts curl timeout attempts" 
-
-  until curl --output /dev/null --silent --head --fail "http://localhost:$LOKL_PORT"; do
-
-      if [ ${attempt_counter} -eq "${max_attempts}" ]; then
-        echo "Timed out waiting for site to come online..."
-        exit 1
-      fi
-
-      printf '.'
-      attempt_counter=$((attempt_counter+1))
-      sleep "$site_poll_sleep_duration"
-  done
+  wait_for_site_reachable "$LOKL_NAME" "$LOKL_PORT"
 
   clear
   echo "Your new Lokl WordPress site, $LOKL_NAME, is ready at:"
@@ -250,6 +232,33 @@ create_wordpress_docker_container() {
 
   read -r ""
   manage_sites_menu
+}
+
+wait_for_site_reachable() {
+  lokl_name="$1"
+  lokl_port="$2"
+
+  echo "Waiting for $lokl_name to be ready at http://localhost:$lokl_port"
+
+  # poll until site accessible, print progresss
+  attempt_counter=0
+  max_attempts="$(set_curl_timeout_max_attempts "$LOKL_TEST_MODE")"
+  site_poll_sleep_duration="$(set_site_poll_sleep_duration "$LOKL_TEST_MODE")"
+
+  lokl_log "Waiting for: $max_attempts curl timeout attempts" 
+
+  until curl --output /dev/null --silent --head --fail "http://localhost:$lokl_port"; do
+
+      if [ ${attempt_counter} -eq "${max_attempts}" ]; then
+        echo "Timed out waiting for site to come online..."
+        exit 1
+      fi
+
+      printf '.'
+      lokl_log "." 
+      attempt_counter=$((attempt_counter+1))
+      sleep "$site_poll_sleep_duration"
+  done
 }
 
 manage_sites_menu() {
@@ -297,23 +306,7 @@ start_if_stopped() {
     CONTAINER_PORT="$(docker inspect --format='{{.NetworkSettings.Ports}}' "$CONTAINER_ID" | \
       sed 's/^[^{]*{\([^{}]*\)}.*/\1/' | awk '{print $2}')"
 
-    echo "Waiting for site to become accessible at http://localhost:$CONTAINER_PORT"
-
-    # poll until site accessible, print progresss
-    attempt_counter=0
-    max_attempts=12
-
-    # await ready state of webserver after launching
-    until curl --output /dev/null --silent --head --fail "http://localhost:$CONTAINER_PORT"; do
-        if [ ${attempt_counter} -eq ${max_attempts} ]; then
-          echo "Timed out waiting for site to come online..."
-          exit 1
-        fi
-
-        printf '.'
-        attempt_counter=$((attempt_counter+1))
-        sleep 5
-    done
+    wait_for_site_reachable "$CONTAINER_NAME" "$CONTAINER_PORT"
   fi
 }
 

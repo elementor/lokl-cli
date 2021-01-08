@@ -434,12 +434,12 @@ f089aa00ac98
         return 0
       }
 
-      curl() {
-        return 0
-      }
-
       get_random_port() {
         echo "4070"
+      }
+
+      wait_for_site_reachable() {
+        return 0
       }
 
       Data "mywptestsitename"
@@ -448,26 +448,38 @@ f089aa00ac98
       The stdout should include 'http://localhost:4070'
       The status should be success
     End
+  End
 
+  Describe "wait_for_site_reachable()"
     It "exits if site doesn't come online after max polling duration"
-      docker() {
-        return 0
-      }
+      # shellcheck disable=SC2034
+      LOKL_TEST_MODE="1"
 
       curl() {
         echo "mocking unsuccessful curl to container..."
         return 1
       }
 
-      get_random_port() {
-        echo "4070"
-      }
-
-      Data "mywptestsitename"
-      When run create_wordpress_docker_container
-      The lines of stdout should equal 7
+      When run wait_for_site_reachable "mywptestsitename" "4070"
+      The lines of stdout should equal 5
       The stdout should include 'Timed out waiting for site to come online..'
       The status should be failure
+    End
+
+    It "succeeds if site is reachable within max polling duration"
+      # shellcheck disable=SC2034
+      LOKL_TEST_MODE="1"
+
+      curl() {
+        return 0
+      }
+
+      When run wait_for_site_reachable "mywptestsitename" "4070"
+      The lines of stdout should equal 1
+      The stdout should equal \
+        'Waiting for mywptestsitename to be ready at http://localhost:4070'
+      The status should be success
+
     End
   End
 End
