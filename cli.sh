@@ -255,7 +255,6 @@ wait_for_site_reachable() {
       fi
 
       printf '.'
-      lokl_log "." 
       attempt_counter=$((attempt_counter+1))
       sleep "$site_poll_sleep_duration"
   done
