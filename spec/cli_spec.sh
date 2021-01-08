@@ -425,89 +425,38 @@ f089aa00ac98
     End
   End
 
-  xDescribe "create_wordpress_docker_container()"
+  Describe "create_wordpress_docker_container()"
     It "launches container with name and random port when proper name is given"
-     # mock test_core_capabilities as not core to this test 
-      test_core_capabilities() {
-        clear
-        echo ""
-        echo "Checking system requirements... "
-        echo ""
-        # skip these commands
-        # test_docker_available
-        # test_curl_available
-        # TODO: specify fn exit codes with `return`
-      }
+      # shellcheck disable=SC2034
+      LOKL_NAME="mywptestsitename"
 
-      # mock docker run in launching the container
       docker() {
-        echo "mocking launching container...."
+        return 0
       }
 
       curl() {
-        echo "mocking successful curl to container..."
+        return 0
       }
 
-      # mock random port
       get_random_port() {
         echo "4070"
       }
 
       Data "mywptestsitename"
-      When run create_site_choose_name
+      When run create_wordpress_docker_container
       The stdout should include 'Your new Lokl WordPress site, mywptestsitename, is ready at:'
       The stdout should include 'http://localhost:4070'
       The status should be success
     End
 
-    It "prompts for site name again if input invalid"
-     # mock test_core_capabilities as not core to this test 
-      test_core_capabilities() {
-        clear
-        echo ""
-        echo "Checking system requirements... "
-        echo ""
-        # skip these commands
-        # test_docker_available
-        # test_curl_available
-      }
-
-      # mock docker run in launching the container
-      docker() {
-        echo "mocking launching container...."
-      }
-
-      curl() {
-        echo "mocking successful curl to container..."
-      }
-
-      # mock random port
-      get_random_port() {
-        echo "4070"
-      }
-
-      Data ""
-      When run create_site_choose_name
-      The stdout should include 'Choose a name for your new Lokl WordPress site'
-      The status should be failure
-    End
-
     It "exits if site doesn't come online after max polling duration"
-      test_core_capabilities() {
-        clear
-        echo ""
-        echo "Checking system requirements... "
-        echo ""
-      }
-
       docker() {
-        echo "mocking launching container...."
+        return 0
       }
 
       curl() {
         echo "mocking unsuccessful curl to container..."
         return 1
-        
       }
 
       get_random_port() {
@@ -515,8 +464,8 @@ f089aa00ac98
       }
 
       Data "mywptestsitename"
-      When run create_site_choose_name
-      The lines of stdout should equal 21
+      When run create_wordpress_docker_container
+      The lines of stdout should equal 7
       The stdout should include 'Timed out waiting for site to come online..'
       The status should be failure
     End
