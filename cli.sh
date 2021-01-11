@@ -623,6 +623,7 @@ if [ "${LOKL_NAME}" ]; then
 
   create_wordpress_docker_container
 else
+
   main_menu
 fi
 

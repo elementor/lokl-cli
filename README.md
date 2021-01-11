@@ -1,7 +1,7 @@
 lokl-cli
 ========
 
-Interactive script for launching and managing your [lokl](https://lokl.dev) websites.
+Interactive wizard or noninteractive script for launching and managing your [lokl](https://lokl.dev) WordPress sites.
 
 Usage
 =====
