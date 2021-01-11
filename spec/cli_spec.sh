@@ -419,7 +419,7 @@ f089aa00ac98
 
       Data ""
       When run create_site_choose_name
-      The variable LOKL_NAME should be undefined
+      The variable LOKL_NAME should equal ""
       The stdout should include 'Choose a name for your new Lokl WordPress site'
       The status should be failure
     End

@@ -202,7 +202,7 @@ create_site_choose_name() {
 }
 
 create_wordpress_docker_container() {
-  # LOKL_PORT="$(get_random_port)"
+  LOKL_PORT="$(get_random_port)"
 
   lokl_log "Random port number generated: $LOKL_PORT"
   lokl_log "Using Docker tag: $LOKL_DOCKER_TAG"
@@ -529,6 +529,11 @@ open_phpmyadmin() {
 }
 
 get_random_port() {
+    if [ "$LOKL_PORT" ]; then
+      echo "$LOKL_PORT"
+      return 0
+    fi
+
     # echo value to stdout to be used in cmd substitution
     awk -v min=4000 -v max=5000 'BEGIN{srand(); print int(min+rand()*(max-min+1))}'
 
