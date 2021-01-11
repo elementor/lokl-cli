@@ -56,7 +56,7 @@ set_site_port() {
 }
 
 set_curl_timeout_max_attempts() {
-  if [ "$1" -eq 1 ]; then
+  if [ "$1" = "1" ]; then
     echo 2
   else
     echo 12
@@ -64,7 +64,7 @@ set_curl_timeout_max_attempts() {
 }
 
 set_site_poll_sleep_duration() {
-  if [ "$1" -eq 1 ]; then
+  if [ "$1" = "1" ]; then
     echo 0.1
   else
     echo 5
@@ -202,7 +202,7 @@ create_site_choose_name() {
 }
 
 create_wordpress_docker_container() {
-  LOKL_PORT="$(get_random_port)"
+  # LOKL_PORT="$(get_random_port)"
 
   lokl_log "Random port number generated: $LOKL_PORT"
   lokl_log "Using Docker tag: $LOKL_DOCKER_TAG"
@@ -216,6 +216,12 @@ create_wordpress_docker_container() {
   echo ""
 
   wait_for_site_reachable "$LOKL_NAME" "$LOKL_PORT"
+
+  if [ "$LOKL_NONINTERACTIVE_MODE" ]; then
+    lokl_log "Site successfully launched non-interactively"
+    exit 0 
+  fi
+  
 
   clear
   echo "Your new Lokl WordPress site, $LOKL_NAME, is ready at:"
@@ -593,24 +599,24 @@ if [ "${__SOURCED__}" ]; then
   export LOKL_TEST_MODE=1
 fi
 
-# allow testing without entering menu, using shellspec's var
-${__SOURCED__:+return}
-
 LOKL_DOCKER_TAG="$(set_docker_tag)"
 LOKL_NAME="$(set_site_name)"
 LOKL_PORT="$(set_site_port)"
 
 lokl_log "Using Docker tag: $LOKL_DOCKER_TAG"
 
+# allow testing without entering menu, using shellspec's var
+${__SOURCED__:+return}
+
 # skip menu if minimum required arguments are set
 if [ "${LOKL_NAME}" ]; then
+  export LOKL_NONINTERACTIVE_MODE=1
   lokl_log "Skipping wizard"
   lokl_log "Site Name Argument Passed: $LOKL_NAME"
   lokl_log "Site Port Argument Passed: $LOKL_PORT"
   lokl_log "Docker Tag Argument Passed: $LOKL_DOCKER_TAG"
 
-  # TODO: create_site_function with argument
-  exit 1
+  create_wordpress_docker_container
 else
   main_menu
 fi
