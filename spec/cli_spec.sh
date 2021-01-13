@@ -1,4 +1,4 @@
-# shellcheck shell=sh
+# shellcheck shell=sh disable=SC2034
 Describe "cli.sh"
   Include ./cli.sh
 
@@ -305,17 +305,20 @@ f089aa00ac98
   End
 
   Describe "set_docker_tag()"
-    It "defaults to php8 if $lokl_php_ver not set"
+    It "defaults to php8-LOKL_RELEASE_VERSION if $lokl_php_ver not set"
+      LOKL_RELEASE_VERSION=0.0.1
+
       When call set_docker_tag
-      The output should equal 'php8'
+      The output should equal 'php8-0.0.1'
       The status should be success
     End
 
     It "prints to stdout if $lokl_php_ver set"
+      LOKL_RELEASE_VERSION=0.0.1
       lokl_php_ver="php7"
 
       When call set_docker_tag
-      The output should equal 'php7'
+      The output should equal 'php7-0.0.1'
       The status should be success
     End
   End
@@ -373,19 +376,21 @@ f089aa00ac98
       return 0
     }
 
-    It "sets docker image tag to php8 when 8 chosen"
+    It "sets docker image tag to php8-LOKL_RELEASE_VERSION when 8 chosen"
+      LOKL_RELEASE_VERSION=0.0.1
       Data "8"
       When call create_site_choose_php_version
-      The variable LOKL_DOCKER_TAG should equal 'php8'
+      The variable LOKL_DOCKER_TAG should equal 'php8-0.0.1'
       The output should include \
         'create_wordpress_docker_container() called'
       The status should be success
     End
 
-    It "sets docker image tag to php7 when 7 chosen"
+    It "sets docker image tag to php7-LOKL_RELEASE_VERSION when 7 chosen"
+      LOKL_RELEASE_VERSION=0.0.1
       Data "7"
       When call create_site_choose_php_version
-      The variable LOKL_DOCKER_TAG should equal 'php7'
+      The variable LOKL_DOCKER_TAG should equal 'php7-0.0.1'
       The output should include \
         'create_wordpress_docker_container() called'
       The status should be success
@@ -427,7 +432,6 @@ f089aa00ac98
 
   Describe "create_wordpress_docker_container()"
     It "launches container with name and random port when proper name is given"
-      # shellcheck disable=SC2034
       LOKL_NAME="mywptestsitename"
 
       docker() {
@@ -452,7 +456,6 @@ f089aa00ac98
 
   Describe "wait_for_site_reachable()"
     It "exits if site doesn't come online after max polling duration"
-      # shellcheck disable=SC2034
       LOKL_TEST_MODE="1"
 
       curl() {
@@ -467,7 +470,6 @@ f089aa00ac98
     End
 
     It "succeeds if site is reachable within max polling duration"
-      # shellcheck disable=SC2034
       LOKL_TEST_MODE="1"
 
       curl() {

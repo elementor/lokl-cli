@@ -18,7 +18,7 @@
 #
 #     to skip the wizard, call the script with vars set:
 #
-#     lokl_php_ver=php8 \ 
+#     lokl_php_ver=php8-5.0.0-dev \ 
 #       lokl_site_name=bananapants \
 #       lokl_site_port=4444 \
 #       sh cli.sh
@@ -31,9 +31,9 @@ lokl_log() {
 set_docker_tag() {
   # shellcheck disable=SC2154
   if [ "$lokl_php_ver" ]; then
-    echo "$lokl_php_ver"
+    echo "$lokl_php_ver-$LOKL_RELEASE_VERSION"
   else
-    echo "php8"
+    echo "php8-$LOKL_RELEASE_VERSION"
   fi
 }
 
@@ -149,9 +149,9 @@ create_site_choose_php_version() {
   lokl_log "User input desired php version: $create_site_php_choice"
 
   if [ "$create_site_php_choice" -eq 8 ]; then
-    LOKL_DOCKER_TAG="php8"
+    LOKL_DOCKER_TAG="php8-$LOKL_RELEASE_VERSION"
   elif [ "$create_site_php_choice" -eq 7 ]; then
-    LOKL_DOCKER_TAG="php7"
+    LOKL_DOCKER_TAG="php7-$LOKL_RELEASE_VERSION"
   else
     create_site_choose_php_version
   fi
@@ -607,6 +607,7 @@ fi
 LOKL_DOCKER_TAG="$(set_docker_tag)"
 LOKL_NAME="$(set_site_name)"
 LOKL_PORT="$(set_site_port)"
+LOKL_RELEASE_VERSION="5.0.0-dev"
 
 lokl_log "Using Docker tag: $LOKL_DOCKER_TAG"
 
