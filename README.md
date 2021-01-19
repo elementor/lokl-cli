@@ -8,7 +8,15 @@ Usage
 
 ### macOS, Linux, Windows
 
-`\sh -c "$(curl -sSl 'https://lokl.dev/go?v=4')"`
+*Latest stable release*
+
+`sh -c "$(curl -sSl 'https://lokl.dev/go?v=4')"`
+
+*Latest development version*
+
+`sh -c "$(curl -sSl 'https://lokl.dev/cli-5.0.0-dev')"`
+
+Versions of lokl-cli match with published versions of the Lokl docker images. This helps users to avoid being forced to update to new versions if everything's working fine for them on an old version. While you can fully manipulate your Lokl environment once running, it would be a headache to try, for example, to downgrade from PHP 7.4 to 7.3 if you have a hard requirement for that older version. You can check the [Lokl release notes](https://github.com/leonstafford/lokl/releases) or [CHANGELOG file](https://github.com/leonstafford/lokl/blob/master/CHANGELOG.md) to see information about the environment.
 
 
 Build status
