@@ -277,6 +277,24 @@ manage_sites_menu() {
   echo ""
 
   LOKL_CONTAINERS="$(get_lokl_container_ids)"
+ 
+  # handle no container
+  if [ -z "$LOKL_CONTAINERS" ]; then
+    echo ""
+    echo "No site created."
+    echo ""
+    echo "Press any key to create a new site or q to quit: "
+    echo ""
+
+    read -r create_site_choice
+
+    if [ "$create_site_choice" != "q" ]; then
+      create_site_choose_name
+      return 0
+    else
+      exit 0
+    fi
+  fi
 
   generate_site_list
 
@@ -549,7 +567,6 @@ generate_site_list() {
   rm -Rf /tmp/lokl_containers_cache/*
   mkdir -p /tmp/lokl_containers_cache/
 
-  # TODO: what to do when no sites?
   SITE_COUNTER=1
 
   # POSIX compliant way to iterate a list

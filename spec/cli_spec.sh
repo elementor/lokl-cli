@@ -98,6 +98,30 @@ Describe "cli.sh"
     End
   End
 
+  Describe "manage_sites_menu()"
+    It "alerts that no site had been created and quit"
+      docker() {
+        echo ""
+      }
+
+      Data "q"
+      When run manage_sites_menu
+      The output should include 'No site created.'
+      The status should be success
+    End
+
+    It "alerts that no site had been created and show creation menu"
+      docker() {
+        echo ""
+      }
+
+      Data "a"
+      When run manage_sites_menu
+      The output should include 'Type your site name'
+      The status should equal 1
+    End
+  End
+
   Describe "generate_site_list()"
     It "prints numerically indexed list of site names"
 
