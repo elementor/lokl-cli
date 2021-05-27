@@ -132,6 +132,8 @@ test_docker_available() {
 }
 
 create_site_choose_php_version() {
+  # TODO: skip choice is version has been defined in a Lokl site template
+
   clear
   echo ""
   echo "Choose the PHP version for your  new Lokl WordPress site. "
@@ -197,6 +199,29 @@ create_site_choose_name() {
   fi
 
   lokl_log "User input site name: $LOKL_NAME"
+
+  choose_lokl_site_template
+}
+
+choose_lokl_site_template() {
+  lokl_log "Detecting Lokl site templates"
+
+  # pseudo-code
+
+  # if $HOME/.lokl/templates exists
+
+    # validate each template file
+
+      # does it contain PHP_VERSION and VOLUMES?
+
+        # present list of template names for user to choose
+
+        # choose from list of template names
+
+        # load templare values
+        # set Lokl PHP version variable 
+        # set mount paths
+
 
   create_site_choose_php_version
 }
