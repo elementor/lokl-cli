@@ -234,7 +234,7 @@ choose_lokl_site_template() {
 
       for TEMPLATE_FILE in $TEMPLATE_FILES
       do
-        # TODO: validate it contains required fields (PHP_VERSION and VOLUMES)
+        # TODO: validate it contains required fields (VOLUMES)
 
         TEMPLATE_NAME="$(basename $TEMPLATE_FILE | cut -f 1 -d '.')"
 
@@ -265,6 +265,35 @@ choose_lokl_site_template() {
       do
         if [ "$TEMPLATE_COUNTER" -eq "$CHOSEN_TEMPLATE_INDEX" ]; then
           # load template values
+          lokl_log "Loading site template from $TEMPLATE_FILE"
+
+          PARSE_VOLUMES=""
+
+          while IFS= read -r line || [[ -n "$line" ]]; do
+              TRIMMED_LINE="$(echo "$line" | xargs)"
+
+              lokl_log "Line from file: $TRIMMED_LINE"
+
+              lokl_log "Parse volumes?: $PARSE_VOLUMES"
+
+              # TODO: optimize to not check once flag set
+              if [ "$TRIMMED_LINE" = "VOLUMES" ]; then
+                PARSE_VOLUMES="1"
+              fi
+
+              # if line equals VOLUMES, concat subsequent non empty
+              #  lines to volumes var
+              if [ "$PARSE_VOLUMES" = "1" ]; then
+                if [ ! -z "$TRIMMED_LINE" ]; then
+                  lokl_log "Recording volume line: $TRIMMED_LINE"
+                  VOLUMES_TO_MOUNT="$VOLUMES_TO_MOUNT$TRIMMED_LINE,"
+                fi
+              fi
+          done < "$TEMPLATE_FILE"
+
+          lokl_log "Concatenated volumes to mount:"
+          lokl_log "$VOLUMES_TO_MOUNT"
+          
           # set Lokl PHP version variable 
           # set mount paths
 
@@ -709,6 +738,7 @@ LOKL_DOCKER_TAG="$(set_docker_tag)"
 LOKL_NAME="$(set_site_name)"
 LOKL_PORT="$(set_site_port)"
 LOKL_RELEASE_VERSION="5.0.0-rc2"
+VOLUMES_TO_MOUNT=""
 
 lokl_log "Using Docker tag: $LOKL_DOCKER_TAG"
 

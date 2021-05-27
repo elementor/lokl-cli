@@ -23,10 +23,6 @@
 #
 # License: The Unlicense, https://unlicense.org
 
-PHP_VERSION
-
-8
-
 VOLUMES
 
 /Users/leon/wp2static,/usr/html/wp-content/plugins/wp2static
