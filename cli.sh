@@ -240,6 +240,7 @@ choose_lokl_site_template() {
 
         # print choices for user
         echo "$TEMPLATE_COUNTER)  $TEMPLATE_NAME"
+        lokl_log "$TEMPLATE_COUNTER)  $TEMPLATE_NAME"
 
         TEMPLATE_COUNTER=$((TEMPLATE_COUNTER+1))
       done
@@ -250,11 +251,30 @@ choose_lokl_site_template() {
       # wait for user to choose from list of template names
       read -r choose_site_template_choice
 
-      # choose from list of template names
+      CHOSEN_TEMPLATE_INDEX="$choose_site_template_choice"
 
-      # load templare values
-      # set Lokl PHP version variable 
-      # set mount paths
+      lokl_log "User chose site template #$CHOSEN_TEMPLATE_INDEX"
+
+      # do the for loop again, stopping when index matches
+      #  the chosen site index, then:
+      OLDIFS="$IFS"
+      IFS='
+'
+      TEMPLATE_COUNTER=1
+      for TEMPLATE_FILE in $TEMPLATE_FILES
+      do
+        if [ "$TEMPLATE_COUNTER" -eq "$CHOSEN_TEMPLATE_INDEX" ]; then
+          # load template values
+          # set Lokl PHP version variable 
+          # set mount paths
+
+          break
+        fi
+
+        TEMPLATE_COUNTER=$((TEMPLATE_COUNTER+1))
+      done
+      IFS="$OLDIFS"
+
     else
       lokl_log "Lokl site template directory didn't contain templates"
     fi
