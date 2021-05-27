@@ -26,7 +26,7 @@
 lokl_log() {
   timestamp="$(date '+%H:%M:%S')"
   echo "$timestamp: $1" >> /tmp/lokldebuglog
-} 
+}
 
 set_docker_tag() {
   # shellcheck disable=SC2154
@@ -131,6 +131,18 @@ test_docker_available() {
   fi
 }
 
+test_multi_arch_available() {
+  if ! grep -q 'arm64' /var/lib/dpkg/arch > /dev/null 2>&1
+  then
+     echo "\033[0;33m" # color change
+     echo "ℹ️  You're system might not support this docker image architecture."
+     echo "\033[0;32m" # color change
+     echo "Try again with lokl/lokl:latest as your lokl version."
+     echo "--> See 🔗 https://github.com/leonstafford/lokl#container-parameters."
+     echo "\033[0m" # revert color changes
+  fi
+}
+
 create_site_choose_php_version() {
   clear
   echo ""
@@ -189,7 +201,7 @@ create_site_choose_name() {
     if [ "$LOKL_TEST_MODE" ]; then
       lokl_log "Empty or invalid site name entered"
       # early exit when testing for easier assertion
-      exit 1 
+      exit 1
     fi
 
     # re-ask for name entry if input was invalid
@@ -219,9 +231,9 @@ create_wordpress_docker_container() {
 
   if [ "$LOKL_NONINTERACTIVE_MODE" ]; then
     lokl_log "Site successfully launched non-interactively"
-    exit 0 
+    exit 0
   fi
-  
+
 
   clear
   echo "Your new Lokl WordPress site, $LOKL_NAME, is ready at:"
@@ -233,7 +245,7 @@ create_wordpress_docker_container() {
   # return for assertion while testing
   if [ "$LOKL_TEST_MODE" ]; then
     lokl_log "Returning early for assertion under test runner"
-    exit 0 
+    exit 0
   fi
 
   read -r ""
@@ -251,12 +263,13 @@ wait_for_site_reachable() {
   max_attempts="$(set_curl_timeout_max_attempts "$LOKL_TEST_MODE")"
   site_poll_sleep_duration="$(set_site_poll_sleep_duration "$LOKL_TEST_MODE")"
 
-  lokl_log "Waiting for: $max_attempts curl timeout attempts" 
+  lokl_log "Waiting for: $max_attempts curl timeout attempts"
 
   until curl --output /dev/null --silent --head --fail "http://localhost:$lokl_port"; do
 
       if [ ${attempt_counter} -eq "${max_attempts}" ]; then
         echo "Timed out waiting for site to come online..."
+        test_multi_arch_available
         exit 1
       fi
 
@@ -277,7 +290,7 @@ manage_sites_menu() {
   echo ""
 
   LOKL_CONTAINERS="$(get_lokl_container_ids)"
- 
+
   # handle no container
   if [ -z "$LOKL_CONTAINERS" ]; then
     echo ""
@@ -310,7 +323,7 @@ manage_sites_menu() {
   if [ ! -f "/tmp/lokl_containers_cache/$site_to_manage_choice" ]; then
     echo "Requested site not found, try again"
     manage_sites_menu
-  else 
+  else
     manage_single_site
   fi
 }
@@ -373,7 +386,7 @@ manage_single_site() {
   clear
 
   # load lokl container info from cache file
-  CONTAINER_INFO=$(cat "/tmp/lokl_containers_cache/$site_to_manage_choice") 
+  CONTAINER_INFO=$(cat "/tmp/lokl_containers_cache/$site_to_manage_choice")
   CONTAINER_ID=$(echo "$CONTAINER_INFO" | cut -f1 -d,)
   CONTAINER_NAME=$(echo "$CONTAINER_INFO" | cut -f2 -d,)
   CONTAINER_PORT=$(echo "$CONTAINER_INFO" | cut -f3 -d,)
@@ -443,7 +456,7 @@ take_site_backup() {
   if [ ! -f "/tmp/${CONTAINER_NAME}_SITE_BACKUP.tar.gz" ]; then
     echo "Failed to save backup, try again"
     exit 1
-  else 
+  else
     echo "Backup complete"
     echo ""
     exit 0
@@ -582,7 +595,7 @@ generate_site_list() {
     # print choices for user
     echo "$SITE_COUNTER)  $CONTAINER_NAME"
 
-    # append choices in cache file named for site counter (brittle internal ID) 
+    # append choices in cache file named for site counter (brittle internal ID)
     echo "$CONTAINER_ID,$CONTAINER_NAME,$CONTAINER_PORT,$CONTAINER_STATE" >> /tmp/lokl_containers_cache/$SITE_COUNTER
 
     SITE_COUNTER=$((SITE_COUNTER+1))
