@@ -205,23 +205,48 @@ create_site_choose_name() {
 
 choose_lokl_site_template() {
   lokl_log "Detecting Lokl site templates"
+  LOKL_TEMPLATE_DIR="$HOME/.lokl/templates"
 
   # pseudo-code
 
   # if $HOME/.lokl/templates exists
+  if [ -d "$LOKL_TEMPLATE_DIR" ]; then
+    # and templates exist
+    template_total="$(ls $LOKL_TEMPLATE_DIR/*.lokl | wc -l)"
 
-    # validate each template file
+    # collect valid template names
+    if [ "$template_total" -gt 0 ]; then
 
-      # does it contain PHP_VERSION and VOLUMES?
+      # iterate each template file
+      OLDIFS="$IFS"
+      IFS='
+'
 
-        # present list of template names for user to choose
+      TEMPLATE_FILES="$(ls $LOKL_TEMPLATE_DIR/*.lokl)"
+      TEMPLATE_COUNTER=1
 
-        # choose from list of template names
+      for TEMPLATE_FILE in $TEMPLATE_FILES
+      do
+        # validate it contains required fields (PHP_VERSION and VOLUMES)
 
-        # load templare values
-        # set Lokl PHP version variable 
-        # set mount paths
+        # print choices for user
+        echo "$TEMPLATE_COUNTER)  $TEMPLATE_FILE"
 
+      done
+      IFS="$OLDIFS"
+
+      # present list of template names for user to choose
+
+      # choose from list of template names
+
+      # load templare values
+      # set Lokl PHP version variable 
+      # set mount paths
+
+    fi
+  else
+    lokl_log "No Lokl site templates"
+  fi
 
   create_site_choose_php_version
 }
