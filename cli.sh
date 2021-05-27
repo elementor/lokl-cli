@@ -144,6 +144,8 @@ test_multi_arch_available() {
 }
 
 create_site_choose_php_version() {
+  # TODO: skip choice is version has been defined in a Lokl site template
+
   clear
   echo ""
   echo "Choose the PHP version for your  new Lokl WordPress site. "
@@ -209,6 +211,117 @@ create_site_choose_name() {
   fi
 
   lokl_log "User input site name: $LOKL_NAME"
+
+  choose_lokl_site_template
+}
+
+choose_lokl_site_template() {
+  lokl_log "Detecting Lokl site templates"
+  LOKL_TEMPLATE_DIR="$HOME/.lokl/templates"
+
+  # pseudo-code
+
+  # if $HOME/.lokl/templates exists
+  if [ -d "$LOKL_TEMPLATE_DIR" ]; then
+    # and templates exist
+    template_total="$(ls $LOKL_TEMPLATE_DIR/*.lokl | wc -l)"
+
+    # collect valid template names
+    if [ "$template_total" -gt 0 ]; then
+      clear
+
+      # iterate each template file
+      OLDIFS="$IFS"
+      IFS='
+'
+
+      TEMPLATE_FILES="$(ls $LOKL_TEMPLATE_DIR/*.lokl)"
+      TEMPLATE_COUNTER=1
+
+      echo ""
+      echo "Lokl Site Templates Found"
+      echo ""
+      echo "Please choose one to use for this site:"
+      echo ""
+
+      for TEMPLATE_FILE in $TEMPLATE_FILES
+      do
+        # TODO: validate it contains required fields (VOLUMES)
+
+        TEMPLATE_NAME="$(basename $TEMPLATE_FILE | cut -f 1 -d '.')"
+
+        # print choices for user
+        echo "$TEMPLATE_COUNTER)  $TEMPLATE_NAME"
+        lokl_log "$TEMPLATE_COUNTER)  $TEMPLATE_NAME"
+
+        TEMPLATE_COUNTER=$((TEMPLATE_COUNTER+1))
+      done
+      IFS="$OLDIFS"
+
+      echo ""
+
+      # wait for user to choose from list of template names
+      read -r choose_site_template_choice
+
+      CHOSEN_TEMPLATE_INDEX="$choose_site_template_choice"
+
+      lokl_log "User chose site template #$CHOSEN_TEMPLATE_INDEX"
+
+      # do the for loop again, stopping when index matches
+      #  the chosen site index, then:
+      OLDIFS="$IFS"
+      IFS='
+'
+      TEMPLATE_COUNTER=1
+      for TEMPLATE_FILE in $TEMPLATE_FILES
+      do
+        if [ "$TEMPLATE_COUNTER" -eq "$CHOSEN_TEMPLATE_INDEX" ]; then
+          # load template values
+          lokl_log "Loading site template from $TEMPLATE_FILE"
+
+          PARSE_VOLUMES=""
+
+          while IFS= read -r line || [[ -n "$line" ]]; do
+              TRIMMED_LINE="$(echo "$line" | xargs)"
+
+              lokl_log "Line from file: $TRIMMED_LINE"
+
+              lokl_log "Parse volumes?: $PARSE_VOLUMES"
+
+              # TODO: optimize to not check once flag set
+              if [ "$TRIMMED_LINE" = "VOLUMES" ]; then
+                PARSE_VOLUMES="1"
+              fi
+
+              # if line equals VOLUMES, concat subsequent non empty
+              #  lines to volumes var
+              if [ "$PARSE_VOLUMES" = "1" ]; then
+                if [ ! -z "$TRIMMED_LINE" ]; then
+                  lokl_log "Recording volume line: $TRIMMED_LINE"
+                  VOLUMES_TO_MOUNT="$VOLUMES_TO_MOUNT$TRIMMED_LINE,"
+                fi
+              fi
+          done < "$TEMPLATE_FILE"
+
+          lokl_log "Concatenated volumes to mount:"
+          lokl_log "$VOLUMES_TO_MOUNT"
+          
+          # set Lokl PHP version variable 
+          # set mount paths
+
+          break
+        fi
+
+        TEMPLATE_COUNTER=$((TEMPLATE_COUNTER+1))
+      done
+      IFS="$OLDIFS"
+
+    else
+      lokl_log "Lokl site template directory didn't contain templates"
+    fi
+  else
+    lokl_log "No Lokl site templates directory found"
+  fi
 
   create_site_choose_php_version
 }
@@ -638,6 +751,7 @@ LOKL_DOCKER_TAG="$(set_docker_tag)"
 LOKL_NAME="$(set_site_name)"
 LOKL_PORT="$(set_site_port)"
 LOKL_RELEASE_VERSION="5.0.0-rc2"
+VOLUMES_TO_MOUNT=""
 
 lokl_log "Using Docker tag: $LOKL_DOCKER_TAG"
 
