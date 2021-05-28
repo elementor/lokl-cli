@@ -276,11 +276,6 @@ choose_lokl_site_template() {
 
               lokl_log "Parse volumes?: $PARSE_VOLUMES"
 
-              # TODO: optimize to not check once flag set
-              if [ "$TRIMMED_LINE" = "VOLUMES" ]; then
-                PARSE_VOLUMES="1"
-              fi
-
               # if line equals VOLUMES, concat subsequent non empty
               #  lines to volumes var
               if [ "$PARSE_VOLUMES" = "1" ]; then
@@ -289,6 +284,12 @@ choose_lokl_site_template() {
                   VOLUMES_TO_MOUNT="$VOLUMES_TO_MOUNT$TRIMMED_LINE,"
                 fi
               fi
+
+              # TODO: optimize to not check once flag set
+              if [ "$TRIMMED_LINE" = "VOLUMES" ]; then
+                PARSE_VOLUMES="1"
+              fi
+
           done < "$TEMPLATE_FILE"
 
           lokl_log "Concatenated volumes to mount:"
