@@ -281,7 +281,7 @@ choose_lokl_site_template() {
               if [ "$PARSE_VOLUMES" = "1" ]; then
                 if [ ! -z "$TRIMMED_LINE" ]; then
                   lokl_log "Recording volume line: $TRIMMED_LINE"
-                  VOLUMES_TO_MOUNT="$VOLUMES_TO_MOUNT$TRIMMED_LINE,"
+                  VOLUMES_TO_MOUNT="$VOLUMES_TO_MOUNT$TRIMMED_LINE|"
                 fi
               fi
 
@@ -321,8 +321,12 @@ create_wordpress_docker_container() {
   lokl_log "Random port number generated: $LOKL_PORT"
   lokl_log "Using Docker tag: $LOKL_DOCKER_TAG"
 
+  MOUNT_VOLUMES=" --mount source=/Users/leon/wp2static,destination=/usr/html/wp-content/plugins/wp2static"
+
   docker run -e N="$LOKL_NAME" -e P="$LOKL_PORT" \
     --name="$LOKL_NAME" -p "$LOKL_PORT":"$LOKL_PORT" \
+    -v /Users/leon/wp2static:/usr/html/wp-content/plugins/wp2staticremix \
+    -v /Users/leon/wp2static-addon-netlify:/usr/html/wp-content/plugins/wp2staticnetlifyremix \
     -d lokl/lokl:"$LOKL_DOCKER_TAG"
 
   clear
