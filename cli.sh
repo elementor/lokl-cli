@@ -18,7 +18,7 @@
 #
 #     to skip the wizard, call the script with vars set:
 #
-#     lokl_php_ver=php8-5.0.0-rc2 \
+#     lokl_php_ver=php8-5.0.0 \
 #       lokl_site_name=bananapants \
 #       lokl_site_port=4444 \
 #       sh cli.sh
@@ -763,7 +763,7 @@ fi
 LOKL_DOCKER_TAG="$(set_docker_tag)"
 LOKL_NAME="$(set_site_name)"
 LOKL_PORT="$(set_site_port)"
-LOKL_RELEASE_VERSION="5.0.0-rc2"
+LOKL_RELEASE_VERSION="5.0.0"
 VOLUMES_TO_MOUNT=""
 
 lokl_log "Using Docker tag: $LOKL_DOCKER_TAG"
