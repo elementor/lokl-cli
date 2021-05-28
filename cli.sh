@@ -249,6 +249,8 @@ choose_lokl_site_template() {
       IFS="$OLDIFS"
 
       echo ""
+      echo "0) Don't use any template for this site"
+      echo ""
 
       # wait for user to choose from list of template names
       read -r choose_site_template_choice
@@ -257,59 +259,60 @@ choose_lokl_site_template() {
 
       lokl_log "User chose site template #$CHOSEN_TEMPLATE_INDEX"
 
-      # do the for loop again, stopping when index matches
-      #  the chosen site index, then:
-      OLDIFS="$IFS"
-      IFS='
-'
-      TEMPLATE_COUNTER=1
-      for TEMPLATE_FILE in $TEMPLATE_FILES
-      do
-        if [ "$TEMPLATE_COUNTER" -eq "$CHOSEN_TEMPLATE_INDEX" ]; then
-          # load template values
-          lokl_log "Loading site template from $TEMPLATE_FILE"
+      if [ "$CHOSEN_TEMPLATE_INDEX" != "0" ]; then
+        # do the for loop again, stopping when index matches
+        #  the chosen site index, then:
+        OLDIFS="$IFS"
+        IFS='
+  '
+        TEMPLATE_COUNTER=1
+        for TEMPLATE_FILE in $TEMPLATE_FILES
+        do
+          if [ "$TEMPLATE_COUNTER" -eq "$CHOSEN_TEMPLATE_INDEX" ]; then
+            # load template values
+            lokl_log "Loading site template from $TEMPLATE_FILE"
 
-          PARSE_VOLUMES=""
+            PARSE_VOLUMES=""
 
-          # TODO: [[ isn't POSIX compatible
-          # shellcheck disable=SC3010
-          while IFS= read -r line || [[ -n "$line" ]]; do
-              TRIMMED_LINE="$(echo "$line" | xargs)"
+            # TODO: [[ isn't POSIX compatible
+            # shellcheck disable=SC3010
+            while IFS= read -r line || [[ -n "$line" ]]; do
+                TRIMMED_LINE="$(echo "$line" | xargs)"
 
-              lokl_log "Line from file: $TRIMMED_LINE"
+                lokl_log "Line from file: $TRIMMED_LINE"
 
-              lokl_log "Parse volumes?: $PARSE_VOLUMES"
+                lokl_log "Parse volumes?: $PARSE_VOLUMES"
 
-              # if line equals VOLUMES, concat subsequent non empty
-              #  lines to VOLUMES_TO_MOUNT var, pipe separated
-              if [ "$PARSE_VOLUMES" = "1" ]; then
-                if [ -n "$TRIMMED_LINE" ]; then
-                  lokl_log "Recording volume line: $TRIMMED_LINE"
-                  # delimiter in front to allow replaceing with -v
-                  VOLUMES_TO_MOUNT="|$TRIMMED_LINE$VOLUMES_TO_MOUNT"
+                # if line equals VOLUMES, concat subsequent non empty
+                #  lines to VOLUMES_TO_MOUNT var, pipe separated
+                if [ "$PARSE_VOLUMES" = "1" ]; then
+                  if [ -n "$TRIMMED_LINE" ]; then
+                    lokl_log "Recording volume line: $TRIMMED_LINE"
+                    # delimiter in front to allow replaceing with -v
+                    VOLUMES_TO_MOUNT="|$TRIMMED_LINE$VOLUMES_TO_MOUNT"
+                  fi
                 fi
-              fi
 
-              # TODO: optimize to not check once flag set
-              if [ "$TRIMMED_LINE" = "VOLUMES" ]; then
-                PARSE_VOLUMES="1"
-              fi
+                # TODO: optimize to not check once flag set
+                if [ "$TRIMMED_LINE" = "VOLUMES" ]; then
+                  PARSE_VOLUMES="1"
+                fi
 
-          done < "$TEMPLATE_FILE"
+            done < "$TEMPLATE_FILE"
 
-          lokl_log "Concatenated volumes to mount:"
-          lokl_log "$VOLUMES_TO_MOUNT"
-          
-          # set Lokl PHP version variable 
-          # set mount paths
+            lokl_log "Concatenated volumes to mount:"
+            lokl_log "$VOLUMES_TO_MOUNT"
+            
+            # set Lokl PHP version variable 
+            # set mount paths
 
-          break
-        fi
+            break
+          fi
 
-        TEMPLATE_COUNTER=$((TEMPLATE_COUNTER+1))
-      done
-      IFS="$OLDIFS"
-
+          TEMPLATE_COUNTER=$((TEMPLATE_COUNTER+1))
+        done
+        IFS="$OLDIFS"
+      fi
     else
       lokl_log "Lokl site template directory didn't contain templates"
     fi
