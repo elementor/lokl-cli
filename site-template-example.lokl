@@ -30,5 +30,5 @@
 
 VOLUMES
 
-/Users/leon/wp2static:/usr/html/wp-content/plugins/wp2static
-/Users/leon/wp2static-addon-netlify:/usr/html/wp-content/plugins/wp2static-addon-netlify
+/Users/leon/mypluginsrc:/usr/html/wp-content/plugins/myplugin
+/Users/leon/mythemesrc:/usr/html/wp-content/themes/mytheme
