@@ -132,7 +132,7 @@ test_docker_available() {
 }
 
 test_multi_arch_available() {
-  if ! grep -q 'arm64 \|amd64' /var/lib/dpkg/arch > /dev/null 2>&1
+  if ! uname -m | grep -q 'arm64 \|x86_64' > /dev/null 2>&1
   then
      echo "\033[0;33m" # color change
      echo "ℹ️  You're system might not support this docker image architecture."
@@ -315,13 +315,13 @@ choose_lokl_site_template() {
 
           # set Lokl PHP version variable
           # set mount paths
-          
+
             done < "$TEMPLATE_FILE"
 
             lokl_log "Concatenated volumes to mount:"
             lokl_log "$VOLUMES_TO_MOUNT"
-            
-            # set Lokl PHP version variable 
+
+            # set Lokl PHP version variable
             # set mount paths
 
             break
