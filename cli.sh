@@ -132,14 +132,16 @@ test_docker_available() {
 }
 
 test_multi_arch_available() {
-  if ! uname -m | grep -q 'arm64 \|x86_64' > /dev/null 2>&1
+  if
+    ( ( ! uname -m | grep -q 'arm64 \|x86_64 \|aarch64_be \|aarch64 \|arm8b \|arm8l') ) ||
+    ( ( ! docker buildx ls | grep -q 'arm64 \|amd64' ) )
   then
-     echo "\033[0;33m" # color change
-     echo "ℹ️  You're system might not support this docker image architecture."
-     echo "\033[0;32m" # color change
-     echo "Try again with lokl/lokl:latest as your lokl version."
-     echo "--> See 🔗 https://github.com/leonstafford/lokl#container-parameters."
-     echo "\033[0m" # revert color changes
+      echo "\033[0;33m" # color change
+      echo "ℹ️  You're system might not support this docker image architecture."
+      echo "\033[0;32m" # color change
+      echo "Try again with lokl/lokl:latest as your lokl version."
+      echo "--> See 🔗 https://github.com/leonstafford/lokl#container-parameters."
+      echo "\033[0m" # revert color changes
   fi
 }
 
