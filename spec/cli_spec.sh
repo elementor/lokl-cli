@@ -180,7 +180,7 @@ Describe "cli.sh"
     It "returns random port between 4000 and 5000"
       # shellcheck disable=SC2154
       acceptable_port_number() {
-        [ "$acceptable_port_number" -ge 3999 ] && [ "$acceptable_port_number" -le 5001 ]  
+        [ "$acceptable_port_number" -ge 3999 ] && [ "$acceptable_port_number" -le 5001 ]
       }
 
       When call get_random_port
@@ -315,7 +315,7 @@ f089aa00ac98
   Describe "set_site_name()"
     It "remains empty if $lokl_site_name not set"
       When call set_site_name
-      The output should equal '' 
+      The output should equal ''
       The status should be success
     End
 
@@ -423,7 +423,7 @@ f089aa00ac98
 
   Describe "create_site_choose_name()"
     It "sets LOKL_NAME to site name when proper name is given"
-      # mock test_core_capabilities as not core to this test 
+      # mock test_core_capabilities as not core to this test
       test_core_capabilities() {
         return 0
       }
@@ -488,7 +488,7 @@ f089aa00ac98
       }
 
       When run wait_for_site_reachable "mywptestsitename" "4070"
-      The lines of stdout should equal 5
+      The lines of stdout should equal 11
       The stdout should include 'Timed out waiting for site to come online..'
       The status should be failure
     End
