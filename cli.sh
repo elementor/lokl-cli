@@ -18,7 +18,7 @@
 #
 #     to skip the wizard, call the script with vars set:
 #
-#     lokl_php_ver=php8-5.0.0-rc2 \
+#     lokl_php_ver=php8-5.0.0 \
 #       lokl_site_name=bananapants \
 #       lokl_site_port=4444 \
 #       sh cli.sh
@@ -224,6 +224,7 @@ choose_lokl_site_template() {
   # if $HOME/.lokl/templates exists
   if [ -d "$LOKL_TEMPLATE_DIR" ]; then
     # and templates exist
+    # shellcheck disable=SC2012,SC2086
     template_total="$(ls $LOKL_TEMPLATE_DIR/*.lokl | wc -l)"
 
     # collect valid template names
@@ -235,6 +236,7 @@ choose_lokl_site_template() {
       IFS='
 '
 
+      # shellcheck disable=SC2086
       TEMPLATE_FILES="$(ls $LOKL_TEMPLATE_DIR/*.lokl)"
       TEMPLATE_COUNTER=1
 
@@ -248,7 +250,7 @@ choose_lokl_site_template() {
       do
         # TODO: validate it contains required fields (VOLUMES)
 
-        TEMPLATE_NAME="$(basename $TEMPLATE_FILE | cut -f 1 -d '.')"
+        TEMPLATE_NAME="$(basename "$TEMPLATE_FILE" | cut -f 1 -d '.')"
 
         # print choices for user
         echo "$TEMPLATE_COUNTER)  $TEMPLATE_NAME"
@@ -259,6 +261,8 @@ choose_lokl_site_template() {
       IFS="$OLDIFS"
 
       echo ""
+      echo "0) Don't use any template for this site"
+      echo ""
 
       # wait for user to choose from list of template names
       read -r choose_site_template_choice
@@ -267,55 +271,66 @@ choose_lokl_site_template() {
 
       lokl_log "User chose site template #$CHOSEN_TEMPLATE_INDEX"
 
-      # do the for loop again, stopping when index matches
-      #  the chosen site index, then:
-      OLDIFS="$IFS"
-      IFS='
-'
-      TEMPLATE_COUNTER=1
-      for TEMPLATE_FILE in $TEMPLATE_FILES
-      do
-        if [ "$TEMPLATE_COUNTER" -eq "$CHOSEN_TEMPLATE_INDEX" ]; then
-          # load template values
-          lokl_log "Loading site template from $TEMPLATE_FILE"
+      if [ "$CHOSEN_TEMPLATE_INDEX" != "0" ]; then
+        # do the for loop again, stopping when index matches
+        #  the chosen site index, then:
+        OLDIFS="$IFS"
+        IFS='
+  '
+        TEMPLATE_COUNTER=1
+        for TEMPLATE_FILE in $TEMPLATE_FILES
+        do
+          if [ "$TEMPLATE_COUNTER" -eq "$CHOSEN_TEMPLATE_INDEX" ]; then
+            # load template values
+            lokl_log "Loading site template from $TEMPLATE_FILE"
 
-          PARSE_VOLUMES=""
+            PARSE_VOLUMES=""
 
-          while IFS= read -r line || [[ -n "$line" ]]; do
-              TRIMMED_LINE="$(echo "$line" | xargs)"
+            # TODO: [[ isn't POSIX compatible
+            # shellcheck disable=SC3010
+            while IFS= read -r line || [[ -n "$line" ]]; do
+                TRIMMED_LINE="$(echo "$line" | xargs)"
 
-              lokl_log "Line from file: $TRIMMED_LINE"
+                lokl_log "Line from file: $TRIMMED_LINE"
 
-              lokl_log "Parse volumes?: $PARSE_VOLUMES"
+                lokl_log "Parse volumes?: $PARSE_VOLUMES"
 
-              # TODO: optimize to not check once flag set
-              if [ "$TRIMMED_LINE" = "VOLUMES" ]; then
-                PARSE_VOLUMES="1"
-              fi
-
-              # if line equals VOLUMES, concat subsequent non empty
-              #  lines to volumes var
-              if [ "$PARSE_VOLUMES" = "1" ]; then
-                if [ ! -z "$TRIMMED_LINE" ]; then
-                  lokl_log "Recording volume line: $TRIMMED_LINE"
-                  VOLUMES_TO_MOUNT="$VOLUMES_TO_MOUNT$TRIMMED_LINE,"
+                # if line equals VOLUMES, concat subsequent non empty
+                #  lines to VOLUMES_TO_MOUNT var, pipe separated
+                if [ "$PARSE_VOLUMES" = "1" ]; then
+                  if [ -n "$TRIMMED_LINE" ]; then
+                    lokl_log "Recording volume line: $TRIMMED_LINE"
+                    # delimiter in front to allow replaceing with -v
+                    VOLUMES_TO_MOUNT="|$TRIMMED_LINE$VOLUMES_TO_MOUNT"
+                  fi
                 fi
-              fi
-          done < "$TEMPLATE_FILE"
+
+                # TODO: optimize to not check once flag set
+                if [ "$TRIMMED_LINE" = "VOLUMES" ]; then
+                  PARSE_VOLUMES="1"
+                fi
 
           lokl_log "Concatenated volumes to mount:"
           lokl_log "$VOLUMES_TO_MOUNT"
 
           # set Lokl PHP version variable
           # set mount paths
+          
+            done < "$TEMPLATE_FILE"
 
-          break
-        fi
+            lokl_log "Concatenated volumes to mount:"
+            lokl_log "$VOLUMES_TO_MOUNT"
+            
+            # set Lokl PHP version variable 
+            # set mount paths
 
-        TEMPLATE_COUNTER=$((TEMPLATE_COUNTER+1))
-      done
-      IFS="$OLDIFS"
+            break
+          fi
 
+          TEMPLATE_COUNTER=$((TEMPLATE_COUNTER+1))
+        done
+        IFS="$OLDIFS"
+      fi
     else
       lokl_log "Lokl site template directory didn't contain templates"
     fi
@@ -332,9 +347,26 @@ create_wordpress_docker_container() {
   lokl_log "Random port number generated: $LOKL_PORT"
   lokl_log "Using Docker tag: $LOKL_DOCKER_TAG"
 
-  docker run -e N="$LOKL_NAME" -e P="$LOKL_PORT" \
-    --name="$LOKL_NAME" -p "$LOKL_PORT":"$LOKL_PORT" \
-    -d lokl/lokl:"$LOKL_DOCKER_TAG"
+
+  # shellcheck disable=SC2236
+  if [ ! -z "$VOLUMES_TO_MOUNT" ]; then
+    VOLUME_MOUNT_STRING="$(echo "$VOLUMES_TO_MOUNT" | sed 's/|/ -v /g')"
+
+    # format volume mounting command if any set from template
+    lokl_log "Running with mounted volumes: $VOLUME_MOUNT_STRING"
+
+    # shellcheck disable=SC2086
+    docker run -e N="$LOKL_NAME" -e P="$LOKL_PORT" \
+      --name="$LOKL_NAME" -p "$LOKL_PORT":"$LOKL_PORT" \
+      $VOLUME_MOUNT_STRING \
+      -d lokl/lokl:"$LOKL_DOCKER_TAG"
+  else
+    lokl_log "Running without any mounted volumes"
+
+    docker run -e N="$LOKL_NAME" -e P="$LOKL_PORT" \
+      --name="$LOKL_NAME" -p "$LOKL_PORT":"$LOKL_PORT" \
+      -d lokl/lokl:"$LOKL_DOCKER_TAG"
+  fi
 
   clear
   echo "Launching your new Lokl WordPress site!"
@@ -750,7 +782,7 @@ fi
 LOKL_DOCKER_TAG="$(set_docker_tag)"
 LOKL_NAME="$(set_site_name)"
 LOKL_PORT="$(set_site_port)"
-LOKL_RELEASE_VERSION="5.0.0-rc2"
+LOKL_RELEASE_VERSION="5.0.0"
 VOLUMES_TO_MOUNT=""
 
 lokl_log "Using Docker tag: $LOKL_DOCKER_TAG"

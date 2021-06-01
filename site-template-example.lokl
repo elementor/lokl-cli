@@ -18,12 +18,17 @@
 #
 # Required template fields:
 #
-# PHP_VERSION
 # VOLUMES
+#
+# In format SOURCE:DESTINATION
+#
+# I chose to risk the case of not working with volumes containing colons
+#  in path in order to keep simple. If the bug is raised, I can look at
+#  --mount instead.
 #
 # License: The Unlicense, https://unlicense.org
 
 VOLUMES
 
-/Users/leon/wp2static,/usr/html/wp-content/plugins/wp2static
-/Users/leon/wp2static-addon-netlify,/usr/html/wp-content/plugins/wp2static-addon-netlify
+/Users/leon/mypluginsrc:/usr/html/wp-content/plugins/myplugin
+/Users/leon/mythemesrc:/usr/html/wp-content/themes/mytheme

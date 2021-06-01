@@ -1,3 +1,9 @@
+## Lokl CLI 5.0.0
+
+ - mount volumes from host via site templates
+ - fix for running cmds with no sites. Thx @yoannsark!
+ - renamed "go" script to "cli"
+
 ## Lokl Go 4.0
 
  - easily watch error logs
